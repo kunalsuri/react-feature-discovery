@@ -1,0 +1,50 @@
+{
+  "name": "react-feature-discovery",
+  "version": "0.1.0",
+  "description": "A powerful CLI tool for analyzing React codebases (TypeScript/JavaScript) to generate comprehensive feature catalogs with dependency graphs, complexity metrics, and migration guidance. Supports full-stack SaaS applications with both frontend and backend code. Install directly from GitHub.",
+  "keywords": [
+    "react",
+    "typescript",
+    "javascript",
+    "analysis",
+    "feature-discovery",
+    "codebase-analysis",
+    "dependency-graph",
+    "documentation",
+    "migration",
+    "full-stack",
+    "saas",
+    "cli",
+    "developer-tools"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "rfd": "dist/cli.js",
+    "react-feature-discovery": "dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"Tests will be added\" && exit 0",
+    "postinstall": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kunalsuri/react-feature-discovery.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kunalsuri/react-feature-discovery/issues"
+  },
+  "homepage": "https://github.com/kunalsuri/react-feature-discovery#readme",
+  "author": "Kunal Suri",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

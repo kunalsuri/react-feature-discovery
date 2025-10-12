@@ -1,8 +1,10 @@
 # React Feature Discovery
 
-> A CLI tool for analyzing React codebases (TypeScript/JavaScript) to generate comprehensive feature catalogs with dependency graphs, complexity metrics, and migration guidance.
+> Analyze React codebases (TypeScript/JavaScript) to generate comprehensive feature catalogs with dependency graphs, complexity metrics, and migration guidance. Available as both a modern Web GUI and powerful CLI.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 
 <br>
 
@@ -43,29 +45,49 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 - ✅ **Protected files excluded** - Automatically skips `.git`, `node_modules`, `.env`, etc.
 - ✅ **Cross-platform tested** - Works on Windows, macOS, and Linux
 
-See [Complete Guide](docs/GUIDE.md) for installation, usage, and safety information.
+See [Complete Documentation](docs/project-info.md) for installation, usage, and safety information.
 
 <br>
 
 ## Features
 
-✨ **Comprehensive Analysis**
+### 🎨 Dual Interface
+
+**Web GUI** - Beautiful browser interface (no command line needed!)
+- Modern dark theme optimized for developers
+- Real-time progress tracking with animations
+- Visual folder selection and configuration
+- One-click access to generated reports
+- Ultra-lightweight (~300KB, pure HTML/CSS/JS)
+
+**CLI** - Powerful command-line tool
+- Perfect for automation and CI/CD
+- Scriptable and batch processing
+- Fast and efficient
+- Same analysis engine as GUI
+
+### ✨ Comprehensive Analysis
+
 - Automatically discovers and categorizes React components, hooks, contexts, pages, and services
 - Analyzes dependencies (internal and external)
 - Detects React-specific patterns (hooks, HOCs, contexts)
 - Generates dependency graphs
+- Complexity metrics and migration guidance
 
-📊 **Multiple Output Formats**
-- Markdown (default) - Human-readable documentation
-- JSON - Machine-readable for CI/CD integration
-- HTML - Interactive visualization
+### 📊 Multiple Output Formats
 
-🎯 **Full-Stack Support**
+- **Markdown** - Human-readable documentation
+- **JSON** - Machine-readable for CI/CD integration
+- **HTML** - Interactive visualization
+
+### 🎯 Full-Stack Support
+
 - Analyzes both client and server code
 - Supports TypeScript (.ts, .tsx) and JavaScript (.js, .jsx)
 - Works with any React project structure (CRA, Vite, Next.js, Remix, custom)
 
-⚙️ **Highly Configurable**
+### ⚙️ Highly Configurable
+
 - Custom categorization rules
 - Configurable environment detection
 - Custom module types
@@ -133,50 +155,80 @@ node /path/to/react-feature-discovery/dist/cli.js --version
 
 ## Quick Start
 
-After installation, you can use the tool in several ways:
+### 🚀 Choose Your Interface
 
+#### 🎨 Web GUI (Recommended for Most Users)
+
+**Start the server:**
 ```bash
-# If you ran npm link
-rfd
-
-# Or run directly from the repository
-node /path/to/react-feature-discovery/dist/cli.js
-
-# Or add to your project's package.json scripts
-# "scripts": {
-#   "analyze": "node ../react-feature-discovery/dist/cli.js"
-# }
-npm run analyze
+npm run gui
 ```
 
-### Basic Usage Examples
+**Or use launcher scripts:**
+```bash
+# Windows
+start-gui.bat
 
+# Mac/Linux
+./start-gui.sh
+```
+
+Then your browser opens automatically at `http://localhost:3000` with a beautiful interface where you can:
+- 📁 Enter your project path
+- 📊 Select output formats
+- ⚙️ Configure options with checkboxes
+- 🚀 Click "Start Analysis"
+- 📈 Watch real-time progress
+- � Download results with one click
+
+**Perfect for:**
+- Visual learners
+- Quick one-off analyses
+- Demos and presentations
+- Users new to command line
+
+#### 💻 Command Line (For Power Users & Automation)
+
+**After installation:**
+```bash
+# If you ran npm link
+rfd --root ./src
+
+# Or run directly
+node dist/cli.js --root ./src
+
+# Or use npx
+npx . --root ./src
+```
+
+**Basic examples:**
 ```bash
 # Analyze current directory
 rfd
 
-# Analyze specific directory
-rfd --root ./src
-
-# Generate multiple formats
+# Multiple output formats
 rfd --format markdown,json,html
 
 # Custom output path
 rfd --output docs/features.md
+
+# Disable caching for fresh analysis
+rfd --no-cache
 ```
+
+**Perfect for:**
+- Automation and CI/CD
+- Scripting and batch processing
+- Power users who prefer terminals
+- Integration with other tools
+
+### 📚 Full Documentation
+
+See [Complete Documentation](docs/project-info.md) for detailed instructions, configuration options, and advanced usage.
 
 <br>
 
-
-## Usage
-
-### Basic Usage
-
-```bash
-rfd [options]
-```
-
-### Options
+## CLI Options
 
 | Option | Alias | Description | Default |
 |--------|-------|-------------|---------|
@@ -189,88 +241,23 @@ rfd [options]
 | `--version` | `-v` | Show version | |
 | `--help` | `-h` | Show help | |
 
-
-<br>
-
-### Examples
-
-```bash
-# Analyze a Vite project
-rfd --root ./src --output docs/features.md
-
-# Generate all formats
-rfd --format markdown,json,html
-
-# Use custom config
-rfd --config .rfdrc.json
-
-# Analyze Next.js project
-rfd --root ./app --output analysis/features.md
-
-# Run from repository without npm link
-node /path/to/react-feature-discovery/dist/cli.js --root ./src
-```
-
-### Using in Your Project
-
-Add to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "analyze": "node ../react-feature-discovery/dist/cli.js",
-    "analyze:json": "node ../react-feature-discovery/dist/cli.js --format json",
-    "analyze:all": "node ../react-feature-discovery/dist/cli.js --format markdown,json,html"
-  }
-}
-```
-
-Then run:
-
-```bash
-npm run analyze
-```
-
 <br>
 
 ## Configuration
 
-Create a configuration file in your project root:
+Customize analysis using configuration files. Create one of these in your project root:
 
-### `.rfdrc.json`
-
+**`.rfdrc.json`** (recommended):
 ```json
 {
   "rootDir": "./src",
   "outputPath": "docs/features.md",
   "outputFormats": ["markdown", "json"],
-  "excludeDirs": ["node_modules", "dist", ".git"],
-  "detectReactPatterns": true,
-  "detectHooks": true,
-  "detectContexts": true,
-  "clientDirs": ["client", "src", "app"],
-  "serverDirs": ["server", "api", "backend"]
+  "excludeDirs": ["node_modules", "dist", ".git"]
 }
 ```
 
-### `.rfdrc.js`
-
-```javascript
-export default {
-  rootDir: './src',
-  outputPath: 'docs/features.md',
-  customCategories: {
-    'custom-component': {
-      pattern: /my-components\//,
-      category: 'component',
-      priority: 10
-    }
-  }
-};
-```
-
-### `package.json`
-
+**Or `package.json`:**
 ```json
 {
   "rfd": {
@@ -280,87 +267,27 @@ export default {
 }
 ```
 
-<br>
+Then run: `rfd --config .rfdrc.json` (or just `rfd` to auto-detect)
 
-## Configuration Options
-
-### File Scanning
-
-- `rootDir` - Root directory to analyze
-- `excludeDirs` - Directories to exclude
-- `filePatterns` - File patterns to include
-- `clientDirs` - Client-side code directories
-- `serverDirs` - Server-side code directories
-
-### Analysis
-
-- `detectReactPatterns` - Detect React-specific patterns
-- `detectHooks` - Detect React hooks
-- `detectContexts` - Detect React contexts
-- `detectHOCs` - Detect Higher-Order Components
-
-### Output
-
-- `outputPath` - Output file path
-- `outputFormats` - Output formats (markdown, json, html)
-
-### Performance
-
-- `parallel` - Enable parallel processing
-- `cacheEnabled` - Enable caching
-- `cacheDir` - Cache directory
-
-### Customization
-
-- `customCategories` - Custom categorization rules
-- `moduleTypes` - Custom module types
-- `environmentPatterns` - Custom environment detection patterns
-- `customMigrationRules` - Custom migration rules
+For complete configuration options, see the [Configuration Guide](docs/project-info.md#configuration).
 
 <br>
 
-## Output Examples
+## What You Get
 
-### Markdown Output
+The tool generates comprehensive documentation including:
 
-```markdown
-# Feature Catalog - My React App
+- **Feature Catalog** - Complete inventory of components, hooks, pages, services
+- **Dependency Graph** - Visual relationships between modules
+- **Technology Detection** - Automatically identifies frameworks and libraries used
+- **Complexity Metrics** - File sizes, line counts, dependency counts
+- **Migration Guidance** - Suggestions for improvements and modernization
+- **Environment Analysis** - Separates client and server code
 
-## Summary
-
-### Feature Breakdown
-
-| Category | Count |
-|----------|-------|
-| Pages | 10 |
-| Components | 45 |
-| Hooks | 12 |
-| Services | 8 |
-
-### Key Technologies
-
-- React 18
-- TypeScript
-- TanStack Query
-- Tailwind CSS
-```
-
-### JSON Output
-
-```json
-{
-  "metadata": {
-    "projectName": "my-react-app",
-    "totalFiles": 75,
-    "version": "1.0.0"
-  },
-  "summary": {
-    "pages": 10,
-    "components": 45,
-    "hooks": 12
-  }
-}
-```
+**Output formats:**
+- 📝 **Markdown** - Beautiful documentation (great for README files)
+- 📋 **JSON** - Machine-readable data (perfect for CI/CD and tooling)
+- 🌐 **HTML** - Interactive visualization (shareable reports)
 
 <br>
 
@@ -435,18 +362,35 @@ npm test
 
 <br>
 
+## GUI vs CLI Comparison
+
+| Feature | Web GUI | CLI |
+|---------|---------|-----|
+| **Ease of Use** | ⭐⭐⭐⭐⭐ Click and go | ⭐⭐⭐ Command line knowledge needed |
+| **Visual Feedback** | ⭐⭐⭐⭐⭐ Real-time progress bar | ⭐⭐⭐ Console output |
+| **Setup Time** | ⭐⭐⭐⭐⭐ `npm run gui` and done | ⭐⭐⭐⭐ `rfd --root ./src` |
+| **Automation** | ⭐⭐ Manual only | ⭐⭐⭐⭐⭐ Perfect for CI/CD |
+| **Scripting** | ❌ Not applicable | ⭐⭐⭐⭐⭐ Full scripting support |
+| **Speed** | ⭐⭐⭐⭐⭐ Same engine | ⭐⭐⭐⭐⭐ Same engine |
+| **Best For** | Demos, quick tests, beginners | Automation, power users, CI/CD |
+
+**Both use the same analysis engine = identical results!**
+
+<br>
+
 ## Links
 
-- [Complete Guide](docs/GUIDE.md) - Installation, usage, and safety
-- [GitHub Repository](https://github.com/kunalsuri/react-feature-discovery)
-- [Issue Tracker](https://github.com/kunalsuri/react-feature-discovery/issues)
-- [Changelog](CHANGELOG.md)
-- [Contributing Guide](CONTRIBUTING.md)
+- 📖 [Complete Documentation](docs/project-info.md) - Comprehensive guide covering installation, usage, configuration, and safety
+- 🌐 [GitHub Repository](https://github.com/kunalsuri/react-feature-discovery)
+- 🐛 [Issue Tracker](https://github.com/kunalsuri/react-feature-discovery/issues)
+- 📝 [Changelog](CHANGELOG.md)
+- 🤝 [Contributing Guide](CONTRIBUTING.md)
 
 <br>
 
 ## Support
 
-- 🐛 Issues: [GitHub Issues](https://github.com/kunalsuri/react-feature-discovery/issues)
-- 💡 Feature Requests: [GitHub Discussions](https://github.com/kunalsuri/react-feature-discovery/discussions)
-- 📖 Documentation: [GitHub Wiki](https://github.com/kunalsuri/react-feature-discovery/wiki)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/kunalsuri/react-feature-discovery/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/kunalsuri/react-feature-discovery/discussions)
+- 📖 **Documentation**: [Complete Documentation](docs/project-info.md)
+- 🔒 **Security**: For vulnerabilities, please email (don't open public issues)

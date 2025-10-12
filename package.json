@@ -26,6 +26,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "gui": "npm run build && node dist/server.js",
     "test": "echo \"Tests will be added\" && exit 0",
     "postinstall": "npm run build"
   },

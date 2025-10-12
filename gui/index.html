@@ -364,7 +364,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="outputPath">📄 Output File Path</label>
+                    <label for="outputPath">📄 Output File Name</label>
                     <input 
                         type="text" 
                         id="outputPath" 
@@ -372,7 +372,7 @@
                         placeholder="feature-catalog.md" 
                         value="feature-catalog.md"
                     >
-                    <div class="input-hint">Where to save the analysis results</div>
+                    <div class="input-hint">File will be saved in your project's root directory</div>
                 </div>
 
                 <div class="form-group">
@@ -549,12 +549,21 @@
 
         function showSuccess(job) {
             resultContainer.classList.add('active');
+            
+            // Extract directory from full path
+            const lastSlash = Math.max(job.result.outputPath.lastIndexOf('\\'), job.result.outputPath.lastIndexOf('/'));
+            const outputDir = job.result.outputPath.substring(0, lastSlash);
+            
             resultContainer.innerHTML = `
                 <div class="result-success">
                     <div class="result-title">
                         ✅ Analysis Complete!
                     </div>
                     <p>Your React codebase has been analyzed successfully.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+                        📁 <strong>Saved to your project directory:</strong><br>
+                        <code style="background: var(--background); padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.5rem;">${outputDir}</code>
+                    </p>
                     <div class="file-links">
                         ${job.result.formats.map(format => {
                             const ext = format === 'markdown' ? 'md' : format;
@@ -567,9 +576,6 @@
                             `;
                         }).join('')}
                     </div>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                        📁 Files saved to: ${job.result.outputPath}
-                    </p>
                 </div>
             `;
         }

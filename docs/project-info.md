@@ -199,7 +199,8 @@ You'll see:
 - **Mac/Linux**: `/Users/yourname/projects/my-react-app`
 
 #### Step 2: Configure Output
-- Set output file path (default: `feature-catalog.md`)
+- Set output file name (default: `feature-catalog.md`)
+- **Files are saved to your project's root directory** (parent of the analyzed folder)
 - Choose output formats:
   - ✅ **Markdown** - Human-readable documentation
   - ✅ **JSON** - Machine-readable for CI/CD
@@ -229,6 +230,7 @@ You'll see:
 - 🛡️ **Same safety** as CLI (read-only, local)
 - 📱 **Responsive design** works on all screen sizes
 - 🎨 **Smooth animations** and professional design
+- 📁 **Smart output** - Files saved directly to your project directory
 
 ### Changing the GUI Port
 

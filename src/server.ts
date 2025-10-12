@@ -100,6 +100,14 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
+        // If outputPath is relative or not specified, make it relative to the analyzed directory
+        if (!config.outputPath || !path.isAbsolute(config.outputPath)) {
+          const fileName = config.outputPath || 'feature-catalog.md';
+          // Get the parent directory of rootDir (project root)
+          const projectRoot = path.resolve(config.rootDir, '..');
+          config.outputPath = path.join(projectRoot, fileName);
+        }
+
         // Generate job ID
         const jobId = Date.now().toString();
         
@@ -109,7 +117,8 @@ const server = http.createServer(async (req, res) => {
           progress: 0,
           message: 'Starting analysis...',
           result: null,
-          error: null
+          error: null,
+          rootDir: config.rootDir
         });
 
         // Send immediate response with job ID

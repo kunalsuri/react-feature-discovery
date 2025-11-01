@@ -306,10 +306,10 @@ export class MarkdownWriter {
 
     md += `### Most Depended Upon Files\n\n`;
     const nodeArray = Array.from(graph.nodes.values());
-    nodeArray.sort((a: any, b: any) => b.dependents.length - a.dependents.length);
+    nodeArray.sort((a, b) => b.dependents.length - a.dependents.length);
     
     for (let i = 0; i < Math.min(10, nodeArray.length); i++) {
-      const node: any = nodeArray[i];
+      const node = nodeArray[i];
       md += `${i + 1}. \`${node.filePath}\` - ${node.dependents.length} dependents\n`;
     }
 

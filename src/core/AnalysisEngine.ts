@@ -63,10 +63,11 @@ export class AnalysisEngine {
           const content = fs.readFileSync(file.path, 'utf-8');
           const deps = dependencyAnalyzer.analyzeDependencies(content, file.relativePath);
           allDependencies.set(file.relativePath, deps);
-        } catch (error: any) {
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
           this.errorHandler.logError(
             'PARSE_ERROR',
-            `Failed to analyze dependencies: ${error.message}`,
+            `Failed to analyze dependencies: ${message}`,
             'warning',
             file.relativePath
           );
@@ -108,10 +109,11 @@ export class AnalysisEngine {
             deps
           );
           allMetadata.push(metadata);
-        } catch (error: any) {
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
           this.errorHandler.logError(
             'PARSE_ERROR',
-            `Failed to extract metadata: ${error.message}`,
+            `Failed to extract metadata: ${message}`,
             'warning',
             file.relativePath
           );
@@ -177,11 +179,12 @@ export class AnalysisEngine {
       console.log(`   - Utilities: ${catalog.features.utilities.length}`);
       console.log(`   - Types: ${catalog.features.types.length}`);
 
-    } catch (error: any) {
-      console.error('❌ Fatal error during analysis:', error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('❌ Fatal error during analysis:', message);
       this.errorHandler.logError(
         'PARSE_ERROR',
-        `Fatal error: ${error.message}`,
+        `Fatal error: ${message}`,
         'error'
       );
       throw error;

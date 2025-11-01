@@ -8,6 +8,7 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
 import { ConfigLoader, ConfigValidator, ConfigMerger, defaultConfig } from './config/index.js';
 import { AnalysisEngine } from './core/AnalysisEngine.js';
 import { SafetyValidator } from './utils/SafetyValidator.js';
@@ -15,7 +16,13 @@ import { SafetyValidator } from './utils/SafetyValidator.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 3000;
+const PORT = (() => {
+  const port = Number.parseInt(process.env.PORT || '3000', 10);
+  if (Number.isNaN(port) || port < 1 || port > 65535) {
+    throw new Error(`Invalid PORT environment variable: ${process.env.PORT}. Must be a number between 1-65535`);
+  }
+  return port;
+})();
 
 // Store analysis jobs
 const analysisJobs = new Map();
@@ -60,7 +67,15 @@ const server = http.createServer(async (req, res) => {
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
       try {
-        const { directory } = JSON.parse(body);
+        const parsed = JSON.parse(body);
+        const { directory } = parsed;
+        
+        // Validate input
+        if (!directory || typeof directory !== 'string' || directory.trim() === '') {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ valid: false, error: 'Invalid directory parameter' }));
+          return;
+        }
         
         if (!fs.existsSync(directory)) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -77,9 +92,10 @@ const server = http.createServer(async (req, res) => {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ valid: true, path: directory }));
-      } catch (error: any) {
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ valid: false, error: error.message }));
+        res.end(JSON.stringify({ valid: false, error: message }));
       }
     });
     return;
@@ -92,6 +108,19 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       try {
         const config = JSON.parse(body);
+        
+        // Validate input
+        if (!config || typeof config !== 'object') {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid request body' }));
+          return;
+        }
+        
+        if (!config.rootDir || typeof config.rootDir !== 'string' || config.rootDir.trim() === '') {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid rootDir parameter' }));
+          return;
+        }
         
         // Validate directory
         if (!fs.existsSync(config.rootDir)) {
@@ -127,9 +156,10 @@ const server = http.createServer(async (req, res) => {
 
         // Run analysis in background
         runAnalysis(jobId, config);
-      } catch (error: any) {
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: error.message }));
+        res.end(JSON.stringify({ error: message }));
       }
     });
     return;
@@ -233,9 +263,10 @@ async function runAnalysis(jobId: string, config: any) {
       formats: mergedConfig.outputFormats
     };
 
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     job.status = 'failed';
-    job.error = error.message;
+    job.error = message;
     job.message = 'Analysis failed';
   }
 }
@@ -257,13 +288,14 @@ server.listen(PORT, () => {
   const open = (url: string) => {
     const start = process.platform === 'darwin' ? 'open' :
                   process.platform === 'win32' ? 'start' : 'xdg-open';
-    require('child_process').exec(`${start} ${url}`);
+    exec(`${start} ${url}`);
   };
 
   setTimeout(() => {
     try {
       open(`http://localhost:${PORT}`);
     } catch (err) {
+      // Browser opening is optional, log message only
       console.log('Please open http://localhost:' + PORT + ' in your browser');
     }
   }, 1000);

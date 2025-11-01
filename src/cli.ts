@@ -9,19 +9,19 @@ import { AnalysisEngine } from './core/AnalysisEngine.js';
 import { PartialToolConfig } from './types/index.js';
 import { SafetyValidator } from './utils/SafetyValidator.js';
 
-async function main() {
+async function main(): Promise<number> {
   const args = process.argv.slice(2);
   
   // Show help
   if (args.includes('--help') || args.includes('-h')) {
     showHelp();
-    process.exit(0);
+    return 0;
   }
   
   // Show version
   if (args.includes('--version') || args.includes('-v')) {
     console.log('react-feature-discovery v0.1.0');
-    process.exit(0);
+    return 0;
   }
 
   try {
@@ -47,7 +47,7 @@ async function main() {
     const validator = new ConfigValidator();
     if (!validator.validate(mergedConfig)) {
       console.error(validator.getErrorMessage());
-      process.exit(1);
+      return 1;
     }
     
     // Validate safety
@@ -57,16 +57,18 @@ async function main() {
       for (const error of safetyValidation.errors) {
         console.error(`   - ${error}`);
       }
-      process.exit(1);
+      return 1;
     }
     
     // Run analysis
     const engine = new AnalysisEngine(mergedConfig);
     await engine.analyze();
     
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
-    process.exit(1);
+    return 0;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('❌ Error:', message);
+    return 1;
   }
 }
 
@@ -139,7 +141,14 @@ Documentation:
   `);
 }
 
-main().catch(error => {
+// Only exit process if not in test environment
+main().then(exitCode => {
+  if (process.env.NODE_ENV !== 'test') {
+    process.exit(exitCode);
+  }
+}).catch(error => {
   console.error('Fatal error:', error);
-  process.exit(1);
+  if (process.env.NODE_ENV !== 'test') {
+    process.exit(1);
+  }
 });

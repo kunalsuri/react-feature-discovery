@@ -47,8 +47,9 @@ export class SafetyValidator {
       }
 
       return { valid: true };
-    } catch (error: any) {
-      return { valid: false, error: `Error validating directory: ${error.message}` };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return { valid: false, error: `Error validating directory: ${message}` };
     }
   }
 
@@ -95,8 +96,9 @@ export class SafetyValidator {
       }
 
       return { valid: true };
-    } catch (error: any) {
-      return { valid: false, error: `Error validating output path: ${error.message}` };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return { valid: false, error: `Error validating output path: ${message}` };
     }
   }
 
@@ -139,7 +141,7 @@ export class SafetyValidator {
   /**
    * Validates configuration to ensure it's safe
    */
-  static validateConfig(config: any): { valid: boolean; errors: string[] } {
+  static validateConfig(config: { rootDir?: string; outputPath?: string; excludeDirs?: string[] }): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
     // Validate root directory

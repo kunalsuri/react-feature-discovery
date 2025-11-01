@@ -60,8 +60,9 @@ export class FileScanner {
           }
         }
       }
-    } catch (error: any) {
-      this.errors.push(`Error scanning directory ${dir}: ${error.message}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.errors.push(`Error scanning directory ${dir}: ${message}`);
     }
   }
 

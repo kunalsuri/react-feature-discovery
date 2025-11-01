@@ -2,7 +2,7 @@
 
 > Comprehensive feature documentation for migration and development reference
 
-**Generated:** 11/1/2025, 7:50:45 AM
+**Generated:** 11/1/2025, 8:55:53 AM
 **Version:** 0.1.0
 
 ## Table of Contents
@@ -26,7 +26,7 @@
 | Project Name | react-feature-discovery |
 | Total Files | 41 |
 | Total Features | 41 |
-| Generated At | 11/1/2025, 7:50:45 AM |
+| Generated At | 11/1/2025, 8:55:53 AM |
 | Version | 0.1.0 |
 
 ## Summary
@@ -123,7 +123,7 @@ Total: 6
 - `fs`
 
 **Complexity:**
-- Lines of Code: 155
+- Lines of Code: 157
 - Dependencies: 2
 
 **Migration Notes:**
@@ -461,8 +461,12 @@ Total: 33
 - `./utils/SafetyValidator.js` (utility)
 
 **Complexity:**
-- Lines of Code: 111
+- Lines of Code: 119
 - Dependencies: 4
+
+**Migration Notes:**
+- Uses NODE_ENV for environment detection
+- Uses environment variables
 
 ---
 
@@ -663,7 +667,7 @@ Total: 33
 - `fs`
 
 **Complexity:**
-- Lines of Code: 161
+- Lines of Code: 164
 - Dependencies: 11
 
 **Migration Notes:**
@@ -796,7 +800,7 @@ Total: 33
 - `path`
 
 **Complexity:**
-- Lines of Code: 82
+- Lines of Code: 83
 - Dependencies: 4
 
 **Migration Notes:**
@@ -819,15 +823,16 @@ Total: 33
 - `./core/AnalysisEngine.js` (component)
 - `./utils/SafetyValidator.js` (utility)
 
-*External (4):*
+*External (5):*
 - `http`
 - `fs`
 - `path`
 - `url`
+- `child_process`
 
 **Complexity:**
-- Lines of Code: 202
-- Dependencies: 7
+- Lines of Code: 228
+- Dependencies: 8
 
 **Migration Notes:**
 - Uses environment variables
@@ -1183,7 +1188,7 @@ This project contains 41 features across 0 pages, 0 components, 0 services, 0 ho
 
 #### Environment Detection
 
-**Challenge:** 3 files contain environment-specific code
+**Challenge:** 4 files contain environment-specific code
 
 **Recommendation:** Create environment abstraction layer and configuration management system
 

@@ -1,9 +1,9 @@
 /**
- * Simple CLI Test to verify imports work
+ * CLI Tests
  */
 
-import { describe, it, expect } from '@jest/globals';
-import { parseCLIArgs } from '../src/cli.js';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { parseCLIArgs } from '../src/cli';
 
 describe('CLI Import Test', () => {
   it('should import parseCLIArgs function', () => {

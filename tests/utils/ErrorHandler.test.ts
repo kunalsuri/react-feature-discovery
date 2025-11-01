@@ -3,22 +3,20 @@
  */
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
-import { ErrorHandler } from '../../src/utils/ErrorHandler.js';
-import { ErrorType, AnalysisError } from '../../src/types/index.js';
-
-// Mock console methods
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+import { ErrorHandler } from '../../src/utils/ErrorHandler';
+import { ErrorType, AnalysisError } from '../../src/types/index';
 
 describe('ErrorHandler', () => {
   let errorHandler: ErrorHandler;
+  let mockConsoleLog: jest.SpiedFunction<typeof console.log>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
     errorHandler = new ErrorHandler();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    mockConsoleLog.mockRestore();
   });
 
   describe('logError', () => {

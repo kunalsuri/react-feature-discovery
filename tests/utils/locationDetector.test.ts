@@ -2,8 +2,8 @@
  * LocationDetector Tests
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
-import { LocationDetector, CodeLocation } from '../../src/utils/locationDetector.js';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { LocationDetector, CodeLocation } from '../../src/utils/locationDetector';
 
 describe('LocationDetector', () => {
   let detector: LocationDetector;

@@ -11,9 +11,9 @@ import * as path from 'path';
 jest.mock('http');
 jest.mock('fs');
 jest.mock('path');
-jest.mock('./config/index.js');
-jest.mock('./core/AnalysisEngine.js');
-jest.mock('./utils/SafetyValidator.js');
+jest.mock('../src/config/index');
+jest.mock('../src/core/AnalysisEngine');
+jest.mock('../src/utils/SafetyValidator');
 
 const mockHttp = http as jest.Mocked<typeof http>;
 const mockFs = fs as jest.Mocked<typeof fs>;

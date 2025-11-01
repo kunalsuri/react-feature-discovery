@@ -61,7 +61,7 @@ describe('AnalysisEngine', () => {
     });
 
     it('should create error handler instance', () => {
-      const { ErrorHandler } = require('../../src/utils/ErrorHandler.js');
+      const { ErrorHandler } = require('../../src/utils/ErrorHandler');
       expect(ErrorHandler).toHaveBeenCalled();
     });
   });
@@ -75,7 +75,9 @@ describe('AnalysisEngine', () => {
       // Mock FileScanner
       const { FileScanner } = require('../../src/scanners/FileScanner');
       const mockScanner = {
+        // @ts-ignore - Mock type mismatch
         scanDirectory: jest.fn().mockResolvedValue(mockFiles),
+        // @ts-ignore - Mock type mismatch
         getErrors: jest.fn().mockReturnValue([])
       };
       (FileScanner as any).mockImplementation(() => mockScanner);
@@ -101,6 +103,7 @@ describe('AnalysisEngine', () => {
       }));
 
       (MetadataExtractor as any).mockImplementation(() => ({
+        // @ts-ignore - Mock type mismatch
         extractMetadata: jest.fn().mockResolvedValue({
           complexity: 1,
           linesOfCode: 10,
@@ -109,6 +112,7 @@ describe('AnalysisEngine', () => {
       }));
 
       (CatalogBuilder as any).mockImplementation(() => ({
+        // @ts-ignore - Mock type mismatch
         buildCatalog: jest.fn().mockResolvedValue({
           title: 'Test Catalog',
           features: []
@@ -116,6 +120,7 @@ describe('AnalysisEngine', () => {
       }));
 
       (MarkdownWriter as any).mockImplementation(() => ({
+        // @ts-ignore - Mock type mismatch
         write: jest.fn().mockResolvedValue(undefined)
       }));
 
@@ -144,14 +149,16 @@ describe('AnalysisEngine', () => {
     });
 
     it('should handle scanner errors gracefully', async () => {
-      const { FileScanner } = require('../../src/scanners/FileScanner.js');
+      const { FileScanner } = require('../../src/scanners/FileScanner');
       const mockScanner = {
+        // @ts-ignore - Mock type mismatch
         scanDirectory: jest.fn().mockResolvedValue(mockFiles),
+        // @ts-ignore - Mock type mismatch
         getErrors: jest.fn().mockReturnValue(['File not found: test.tsx'])
       };
       (FileScanner as any).mockImplementation(() => mockScanner);
 
-      const { ErrorHandler } = require('../../src/utils/ErrorHandler.js');
+      const { ErrorHandler } = require('../../src/utils/ErrorHandler');
       const mockErrorHandler = {
         logError: jest.fn()
       };
@@ -163,9 +170,11 @@ describe('AnalysisEngine', () => {
     });
 
     it('should handle analysis errors', async () => {
-      const { FileScanner } = require('../../src/scanners/FileScanner.js');
+      const { FileScanner } = require('../../src/scanners/FileScanner');
       (FileScanner as any).mockImplementation(() => ({
+        // @ts-ignore - Mock type mismatch
         scanDirectory: jest.fn().mockRejectedValue(new Error('Scanner error')),
+        // @ts-ignore - Mock type mismatch
         getErrors: jest.fn().mockReturnValue([])
       }));
 

@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { HTMLGenerator } from '../../src/generators/HTMLGenerator.js';
-import { FeatureCatalog } from '../../src/types/index.js';
+import { HTMLGenerator } from '../../src/generators/HTMLGenerator';
+import { FeatureCatalog } from '../../src/types/index';
 
 // Mock fs module
 jest.mock('fs');
@@ -21,26 +21,18 @@ describe('HTMLGenerator', () => {
         projectName: 'Test Project',
         version: '1.0.0',
         generatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
-        rootDir: '/test',
         totalFiles: 10,
-        totalLines: 1000,
-        technologies: {
-          frontend: ['react', 'typescript'],
-          backend: [],
-          database: [],
-          testing: ['jest'],
-          deployment: []
-        }
+        totalFeatures: 5
       },
       summary: {
-        totalFeatures: 5,
-        componentCount: 3,
-        serviceCount: 1,
-        hookCount: 1,
-        utilityCount: 0,
-        typeCount: 0,
-        moduleCount: 0,
-        pageCount: 0
+        pages: 0,
+        components: 3,
+        services: 1,
+        hooks: 1,
+        utilities: 0,
+        types: 0,
+        externalDependencies: ['react'],
+        keyTechnologies: ['react', 'typescript']
       },
       features: {
         pages: [],
@@ -53,7 +45,7 @@ describe('HTMLGenerator', () => {
             props: ['label', 'onClick'],
             dependencies: {
               internal: [],
-              external: [{ name: 'react', imports: ['React'] }],
+              external: [{ package: 'react', imports: ['React'] }],
               routes: [],
               apis: []
             },
@@ -70,15 +62,21 @@ describe('HTMLGenerator', () => {
       },
       dependencyGraph: {
         nodes: new Map([
-          ['components/Button.tsx', { id: 'components/Button.tsx', type: 'component' }]
+          ['components/Button.tsx', { 
+            id: 'components/Button.tsx', 
+            filePath: 'components/Button.tsx',
+            type: 'component',
+            dependencies: [],
+            dependents: []
+          }]
         ]),
         edges: []
       },
       migrationGuide: {
-        complexity: 'low',
-        estimatedEffort: '1-2 days',
-        risks: [],
-        recommendations: []
+        overview: 'Low complexity migration',
+        recommendations: [],
+        challenges: [],
+        migrationOrder: []
       }
     };
   });
@@ -388,16 +386,8 @@ describe('HTMLGenerator', () => {
           projectName: '',
           version: '',
           generatedAt: '',
-          rootDir: '',
           totalFiles: 0,
-          totalLines: 0,
-          technologies: {
-            frontend: [],
-            backend: [],
-            database: [],
-            testing: [],
-            deployment: []
-          }
+          totalFeatures: 0
         }
       };
 

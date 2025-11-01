@@ -10,7 +10,10 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
-      useESM: true
+      useESM: true,
+      tsconfig: {
+        verbatimModuleSyntax: false
+      }
     }]
   },
   collectCoverageFrom: [
@@ -26,11 +29,9 @@ export default {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
   testTimeout: 30000,
-  verbose: true,
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  }
+  verbose: true
 };

@@ -1,25 +1,30 @@
 /**
- * CLI Tests for React Feature Discovery Tool
+ * CLI Tests
  */
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
-import { parseCLIArgs, showHelp } from '../src/cli.js';
-
-// Mock console methods
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-const mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(() => {
-  throw new Error('process.exit was called');
-}) as any;
+import { parseCLIArgs, showHelp } from '../src/cli';
 
 describe('CLI Argument Parsing', () => {
+  let mockConsoleLog: jest.SpiedFunction<typeof console.log>;
+  let mockConsoleError: jest.SpiedFunction<typeof console.error>;
+  let mockConsoleWarn: jest.SpiedFunction<typeof console.warn>;
+  let mockProcessExit: jest.SpiedFunction<typeof process.exit>;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('process.exit was called');
+    }) as any;
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    mockConsoleLog.mockRestore();
+    mockConsoleError.mockRestore();
+    mockConsoleWarn.mockRestore();
+    mockProcessExit.mockRestore();
   });
 
   describe('parseCLIArgs', () => {

@@ -3,12 +3,13 @@
  */
 
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { JSONGenerator } from '../../src/generators/JSONGenerator.js';
-import { FeatureCatalog } from '../../src/types/index.js';
+import { JSONGenerator } from '../../src/generators/JSONGenerator';
+import { FeatureCatalog } from '../../src/types/index';
+import * as fs from 'fs';
 
 // Mock fs module
 jest.mock('fs');
-const mockFs = require('fs');
+const mockFs = fs as jest.Mocked<typeof fs>;
 
 describe('JSONGenerator', () => {
   let generator: JSONGenerator;
@@ -22,26 +23,18 @@ describe('JSONGenerator', () => {
         projectName: 'Test Project',
         version: '1.0.0',
         generatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
-        rootDir: '/test',
         totalFiles: 10,
-        totalLines: 1000,
-        technologies: {
-          frontend: ['react', 'typescript'],
-          backend: [],
-          database: [],
-          testing: ['jest'],
-          deployment: []
-        }
+        totalFeatures: 5
       },
       summary: {
-        totalFeatures: 5,
-        componentCount: 3,
-        serviceCount: 1,
-        hookCount: 1,
-        utilityCount: 0,
-        typeCount: 0,
-        moduleCount: 0,
-        pageCount: 0
+        pages: 0,
+        components: 3,
+        services: 1,
+        hooks: 1,
+        utilities: 0,
+        types: 0,
+        externalDependencies: ['react'],
+        keyTechnologies: ['react', 'typescript']
       },
       features: {
         pages: [],
@@ -54,7 +47,7 @@ describe('JSONGenerator', () => {
             props: ['label', 'onClick'],
             dependencies: {
               internal: [],
-              external: [{ name: 'react', imports: ['React'] }],
+              external: [{ package: 'react', imports: ['React'] }],
               routes: [],
               apis: []
             },
@@ -71,18 +64,30 @@ describe('JSONGenerator', () => {
       },
       dependencyGraph: {
         nodes: new Map([
-          ['components/Button.tsx', { id: 'components/Button.tsx', type: 'component' }],
-          ['utils/helper.ts', { id: 'utils/helper.ts', type: 'utility' }]
+          ['components/Button.tsx', { 
+            id: 'components/Button.tsx', 
+            filePath: 'components/Button.tsx',
+            type: 'component',
+            dependencies: [],
+            dependents: []
+          }],
+          ['utils/helper.ts', { 
+            id: 'utils/helper.ts', 
+            filePath: 'utils/helper.ts',
+            type: 'utility',
+            dependencies: [],
+            dependents: []
+          }]
         ]),
         edges: [
-          { source: 'components/Button.tsx', target: 'utils/helper.ts', type: 'internal' }
+          { from: 'components/Button.tsx', to: 'utils/helper.ts', type: 'import' }
         ]
       },
       migrationGuide: {
-        complexity: 'low',
-        estimatedEffort: '1-2 days',
-        risks: [],
-        recommendations: []
+        overview: 'Low complexity migration',
+        recommendations: [],
+        challenges: [],
+        migrationOrder: []
       }
     };
   });
@@ -311,7 +316,7 @@ describe('JSONGenerator', () => {
         'utf-8'
       );
       
-      const writtenContent = mockFs.writeFileSync.mock.calls[0][1];
+      const writtenContent = mockFs.writeFileSync.mock.calls[0][1] as string;
       expect(() => JSON.parse(writtenContent)).not.toThrow();
     });
   });

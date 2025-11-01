@@ -2,8 +2,8 @@
  * ReactPatternDetector Tests
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
-import { ReactPatternDetector, HookInfo, ComponentInfo, ContextInfo, HOCInfo } from '../../src/analyzers/ReactPatternDetector.js';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { ReactPatternDetector, HookInfo, ComponentInfo, ContextInfo, HOCInfo } from '../../src/analyzers/ReactPatternDetector';
 
 describe('ReactPatternDetector', () => {
   let detector: ReactPatternDetector;

@@ -2,9 +2,9 @@
  * SafetyValidator Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { SafetyValidator } from '../../src/utils/SafetyValidator.js';
-import { ToolConfig } from '../../src/types/index.js';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { SafetyValidator } from '../../src/utils/SafetyValidator';
+import { ToolConfig } from '../../src/types/index';
 import * as fs from 'fs';
 import * as path from 'path';
 

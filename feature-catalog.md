@@ -2,7 +2,7 @@
 
 > Comprehensive feature documentation for migration and development reference
 
-**Generated:** 11/1/2025, 7:14:28 AM
+**Generated:** 11/1/2025, 7:50:45 AM
 **Version:** 0.1.0
 
 ## Table of Contents
@@ -26,7 +26,7 @@
 | Project Name | react-feature-discovery |
 | Total Files | 41 |
 | Total Features | 41 |
-| Generated At | 11/1/2025, 7:14:28 AM |
+| Generated At | 11/1/2025, 7:50:45 AM |
 | Version | 0.1.0 |
 
 ## Summary
@@ -163,8 +163,8 @@ Total: 6
 **Dependencies:**
 
 *Internal (2):*
-- `../../src/utils/ErrorHandler.js` (utility)
-- `../../src/types/index.js` (type)
+- `../../src/utils/ErrorHandler` (utility)
+- `../../src/types/index` (type)
 
 *External (1):*
 - `@jest/globals`
@@ -186,8 +186,8 @@ Total: 6
 **Dependencies:**
 
 *Internal (2):*
-- `../../src/utils/SafetyValidator.js` (utility)
-- `../../src/types/index.js` (type)
+- `../../src/utils/SafetyValidator` (utility)
+- `../../src/types/index` (type)
 
 *External (3):*
 - `@jest/globals`
@@ -215,7 +215,7 @@ Total: 6
 **Dependencies:**
 
 *Internal (1):*
-- `../../src/utils/locationDetector.js` (utility)
+- `../../src/utils/locationDetector` (utility)
 
 *External (1):*
 - `@jest/globals`
@@ -322,7 +322,7 @@ Total: 33
 **Dependencies:**
 
 **Complexity:**
-- Lines of Code: 35
+- Lines of Code: 36
 - Dependencies: 0
 
 ---
@@ -845,29 +845,20 @@ Total: 33
 
 **Description:** DependencyAnalyzer Tests
 
-**Exports:**
-- `Button` (named const)
-- `utils` (named const)
-
 **Dependencies:**
 
-*Internal (12):*
-- `../../src/analyzers/DependencyAnalyzer.js` (component)
-- `../../src/types/index.js` (type)
-- `../utils/helpers` (utility)
-- `./Button.css` (component)
+*Internal (8):*
+- `../../src/analyzers/DependencyAnalyzer` (component)
+- `../../src/types/index` (type)
 - `../utils/helpers` (utility)
 - `./Button.css` (component)
 - `../utils/helpers` (utility)
 - `./styles.css` (component)
 - `../utils/helper` (utility)
-- `./b` (component)
-- ... and 2 more
+- `./nonexistent` (component)
 
-*External (9):*
+*External (7):*
 - `@jest/globals`
-- `react`
-- `lodash`
 - `react`
 - `react`
 - `react`
@@ -876,11 +867,8 @@ Total: 33
 - `lodash`
 
 **Complexity:**
-- Lines of Code: 200
-- Dependencies: 21
-
-**Migration Notes:**
-- High number of internal dependencies (12) - may be tightly coupled
+- Lines of Code: 208
+- Dependencies: 15
 
 ---
 
@@ -900,7 +888,7 @@ Total: 33
 **Dependencies:**
 
 *Internal (1):*
-- `../../src/analyzers/ReactPatternDetector.js` (component)
+- `../../src/analyzers/ReactPatternDetector` (component)
 
 *External (3):*
 - `@jest/globals`
@@ -938,12 +926,12 @@ Total: 33
 
 **Category:** module
 
-**Description:** Simple CLI Test to verify imports work
+**Description:** CLI Tests
 
 **Dependencies:**
 
 *Internal (1):*
-- `../src/cli.js` (component)
+- `../src/cli` (component)
 
 *External (1):*
 - `@jest/globals`
@@ -1002,18 +990,18 @@ Total: 33
 
 **Category:** module
 
-**Description:** CLI Tests for React Feature Discovery Tool
+**Description:** CLI Tests
 
 **Dependencies:**
 
 *Internal (1):*
-- `../src/cli.js` (component)
+- `../src/cli` (component)
 
 *External (1):*
 - `@jest/globals`
 
 **Complexity:**
-- Lines of Code: 109
+- Lines of Code: 115
 - Dependencies: 2
 
 ---
@@ -1056,14 +1044,14 @@ Total: 33
 **Dependencies:**
 
 *Internal (2):*
-- `../../src/generators/HTMLGenerator.js` (component)
-- `../../src/types/index.js` (type)
+- `../../src/generators/HTMLGenerator` (component)
+- `../../src/types/index` (type)
 
 *External (1):*
 - `@jest/globals`
 
 **Complexity:**
-- Lines of Code: 362
+- Lines of Code: 352
 - Dependencies: 3
 
 ---
@@ -1079,15 +1067,16 @@ Total: 33
 **Dependencies:**
 
 *Internal (2):*
-- `../../src/generators/JSONGenerator.js` (component)
-- `../../src/types/index.js` (type)
+- `../../src/generators/JSONGenerator` (component)
+- `../../src/types/index` (type)
 
-*External (1):*
+*External (2):*
 - `@jest/globals`
+- `fs`
 
 **Complexity:**
-- Lines of Code: 273
-- Dependencies: 3
+- Lines of Code: 278
+- Dependencies: 4
 
 **Migration Notes:**
 - Performs file system operations - ensure proper permissions
@@ -1105,14 +1094,14 @@ Total: 33
 **Dependencies:**
 
 *Internal (2):*
-- `../../src/generators/MarkdownGenerator.js` (component)
-- `../../src/types/index.js` (type)
+- `../../src/generators/MarkdownGenerator` (component)
+- `../../src/types/index` (type)
 
 *External (1):*
 - `@jest/globals`
 
 **Complexity:**
-- Lines of Code: 292
+- Lines of Code: 295
 - Dependencies: 3
 
 ---
@@ -1219,9 +1208,9 @@ Migrate in the following order (least dependent first):
 3. `src/utils/ErrorHandler.ts`
 4. `src/utils/SafetyValidator.ts`
 5. `src/utils/locationDetector.ts`
-6. `tests/utils/ErrorHandler.test.ts`
-7. `tests/utils/SafetyValidator.test.ts`
-8. `tests/utils/locationDetector.test.ts`
+6. `tests/utils/locationDetector.test.ts`
+7. `tests/utils/ErrorHandler.test.ts`
+8. `tests/utils/SafetyValidator.test.ts`
 9. `src/analyzers/CatalogBuilder.ts`
 10. `src/analyzers/DependencyAnalyzer.ts`
 11. `src/analyzers/MetadataExtractor.ts`
@@ -1240,17 +1229,17 @@ Migrate in the following order (least dependent first):
 ## Dependency Graph
 
 **Total Nodes:** 41
-**Total Edges:** 2
+**Total Edges:** 18
 
 ### Most Depended Upon Files
 
-1. `src/core/AnalysisEngine.ts` - 1 dependents
-2. `src/types/index.ts` - 1 dependents
-3. `jest.config.js` - 0 dependents
-4. `src/analyzers/CatalogBuilder.ts` - 0 dependents
-5. `src/analyzers/DependencyAnalyzer.ts` - 0 dependents
-6. `src/analyzers/MetadataExtractor.ts` - 0 dependents
-7. `src/analyzers/ReactPatternDetector.ts` - 0 dependents
-8. `src/cli.ts` - 0 dependents
-9. `src/config/ConfigLoader.ts` - 0 dependents
-10. `src/config/ConfigMerger.ts` - 0 dependents
+1. `src/types/index.ts` - 7 dependents
+2. `src/cli.ts` - 2 dependents
+3. `src/analyzers/DependencyAnalyzer.ts` - 1 dependents
+4. `src/analyzers/ReactPatternDetector.ts` - 1 dependents
+5. `src/core/AnalysisEngine.ts` - 1 dependents
+6. `src/generators/HTMLGenerator.ts` - 1 dependents
+7. `src/generators/JSONGenerator.ts` - 1 dependents
+8. `src/generators/MarkdownGenerator.ts` - 1 dependents
+9. `src/utils/ErrorHandler.ts` - 1 dependents
+10. `src/utils/SafetyValidator.ts` - 1 dependents

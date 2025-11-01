@@ -70,7 +70,7 @@ async function main() {
   }
 }
 
-function parseCLIArgs(args: string[]): PartialToolConfig {
+export function parseCLIArgs(args: string[]): PartialToolConfig {
   const config: PartialToolConfig = {};
   
   for (let i = 0; i < args.length; i++) {
@@ -105,7 +105,7 @@ function parseCLIArgs(args: string[]): PartialToolConfig {
   return config;
 }
 
-function showHelp() {
+export function showHelp() {
   console.log(`
 React Feature Discovery Tool
 

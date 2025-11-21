@@ -1,605 +1,914 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>React Feature Discovery - GUI</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        :root {
-            --primary: #61dafb;
-            --primary-dark: #21a1c4;
-            --secondary: #282c34;
-            --background: #0d1117;
-            --surface: #161b22;
-            --surface-hover: #1f2937;
-            --text: #e6edf3;
-            --text-secondary: #8b949e;
-            --success: #3fb950;
-            --error: #f85149;
-            --warning: #d29922;
-            --border: #30363d;
-        }
+      :root {
+        --primary: #61dafb;
+        --primary-dark: #21a1c4;
+        --secondary: #282c34;
+        --background: #0d1117;
+        --surface: #161b22;
+        --surface-hover: #1f2937;
+        --text: #e6edf3;
+        --text-secondary: #8b949e;
+        --success: #3fb950;
+        --error: #f85149;
+        --warning: #d29922;
+        --border: #30363d;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-            background: var(--background);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          "Oxygen", "Ubuntu", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-            border-bottom: 2px solid var(--border);
-        }
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        border-bottom: 2px solid var(--border);
+      }
 
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
+      .logo {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
 
-        h1 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
+      h1 {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
 
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(97, 218, 251, 0.1);
-        }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(97, 218, 251, 0.1);
+      }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-            font-weight: 500;
-        }
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-weight: 500;
+      }
 
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
+      input[type="text"],
+      select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--text);
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
 
-        input[type="text"]:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
 
-        .input-hint {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
+      .input-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+      }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
 
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
 
-        .format-options {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+      .format-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
 
-        .format-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+      .format-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
 
-        .format-option:hover {
-            background: var(--surface-hover);
-            border-color: var(--primary);
-        }
+      .format-option:hover {
+        background: var(--surface-hover);
+        border-color: var(--primary);
+      }
 
-        .format-option input[type="checkbox"]:checked + label {
-            color: var(--primary);
-        }
+      .format-option input[type="checkbox"]:checked + label {
+        color: var(--primary);
+      }
 
-        button {
-            padding: 1rem 2rem;
-            background: var(--primary);
-            color: var(--secondary);
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
+      button {
+        padding: 1rem 2rem;
+        background: var(--primary);
+        color: var(--secondary);
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+      }
 
-        button:hover:not(:disabled) {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
-        }
+      button:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
+      }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-        .progress-container {
-            display: none;
-            margin-top: 2rem;
-        }
+      .progress-container {
+        display: none;
+        margin-top: 2rem;
+      }
 
-        .progress-container.active {
-            display: block;
-        }
+      .progress-container.active {
+        display: block;
+      }
 
-        .progress-bar-wrapper {
-            background: var(--background);
-            border-radius: 8px;
-            overflow: hidden;
-            height: 40px;
-            margin-bottom: 1rem;
-            position: relative;
-        }
+      .progress-bar-wrapper {
+        background: var(--background);
+        border-radius: 8px;
+        overflow: hidden;
+        height: 40px;
+        margin-bottom: 1rem;
+        position: relative;
+      }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--secondary);
-            font-weight: 600;
-        }
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+        font-weight: 600;
+      }
 
-        .progress-message {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
+      .progress-message {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
 
-        .result-container {
-            display: none;
-        }
+      .result-container {
+        display: none;
+      }
 
-        .result-container.active {
-            display: block;
-        }
+      .result-container.active {
+        display: block;
+      }
 
-        .result-success {
-            background: linear-gradient(135deg, rgba(63, 185, 80, 0.1), rgba(63, 185, 80, 0.05));
-            border: 1px solid var(--success);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
+      .result-success {
+        background: linear-gradient(
+          135deg,
+          rgba(63, 185, 80, 0.1),
+          rgba(63, 185, 80, 0.05)
+        );
+        border: 1px solid var(--success);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
 
-        .result-error {
-            background: linear-gradient(135deg, rgba(248, 81, 73, 0.1), rgba(248, 81, 73, 0.05));
-            border: 1px solid var(--error);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
+      .result-error {
+        background: linear-gradient(
+          135deg,
+          rgba(248, 81, 73, 0.1),
+          rgba(248, 81, 73, 0.05)
+        );
+        border: 1px solid var(--error);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
 
-        .result-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .result-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .file-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
+      .file-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
 
-        .file-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--primary);
-            text-decoration: none;
-            transition: all 0.2s;
-        }
+      .file-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
 
-        .file-link:hover {
-            background: var(--surface-hover);
-            transform: translateY(-2px);
-        }
+      .file-link:hover {
+        background: var(--surface-hover);
+        transform: translateY(-2px);
+      }
 
-        .safety-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, rgba(63, 185, 80, 0.1), rgba(63, 185, 80, 0.05));
-            border: 1px solid var(--success);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
+      .safety-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(
+          135deg,
+          rgba(63, 185, 80, 0.1),
+          rgba(63, 185, 80, 0.05)
+        );
+        border: 1px solid var(--success);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
 
-        .feature-item {
-            background: var(--background);
-            padding: 1rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
+      .feature-item {
+        background: var(--background);
+        padding: 1rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
 
-        .feature-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+      .feature-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
 
-        .feature-title {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
+      .feature-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
 
-        .feature-description {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
+      .feature-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+      }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        .spinner {
-            display: inline-block;
-            animation: spin 1s linear infinite;
-        }
+      .spinner {
+        display: inline-block;
+        animation: spin 1s linear infinite;
+      }
 
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border);
-            margin-top: 4rem;
-        }
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border);
+        margin-top: 4rem;
+      }
 
-        footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
+      footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      .tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 1rem 2rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+      .tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .stat {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-right: 0.5rem;
+      }
+      .stat.added {
+        background: rgba(63, 185, 80, 0.2);
+        color: var(--success);
+      }
+      .stat.removed {
+        background: rgba(248, 81, 73, 0.2);
+        color: var(--error);
+      }
+      .stat.modified {
+        background: rgba(210, 153, 34, 0.2);
+        color: var(--warning);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <div class="logo">⚛️</div>
-            <h1>React Feature Discovery</h1>
-            <p class="subtitle">Analyze React codebases to generate comprehensive feature catalogs</p>
-        </header>
+      <header>
+        <div class="logo">⚛️</div>
+        <h1>React Feature Discovery</h1>
+        <p class="subtitle">
+          Analyze React codebases to generate comprehensive feature catalogs
+        </p>
+      </header>
 
-        <div class="card">
-            <div class="safety-badge">
-                🛡️ Safety Mode: Read-only analysis • No code modifications
-            </div>
-
-            <form id="analysisForm">
-                <div class="form-group">
-                    <label for="rootDir">📁 Project Root Directory</label>
-                    <input 
-                        type="text" 
-                        id="rootDir" 
-                        name="rootDir" 
-                        placeholder="C:\path\to\your\react\project" 
-                        required
-                    >
-                    <div class="input-hint">Enter the full path to your React project</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="outputPath">📄 Output File Name</label>
-                    <input 
-                        type="text" 
-                        id="outputPath" 
-                        name="outputPath" 
-                        placeholder="feature-catalog.md" 
-                        value="feature-catalog.md"
-                    >
-                    <div class="input-hint">File will be saved in your project's root directory</div>
-                </div>
-
-                <div class="form-group">
-                    <label>📊 Output Formats</label>
-                    <div class="format-options">
-                        <div class="format-option">
-                            <input type="checkbox" id="formatMarkdown" name="formats" value="markdown" checked>
-                            <label for="formatMarkdown">📝 Markdown</label>
-                        </div>
-                        <div class="format-option">
-                            <input type="checkbox" id="formatJSON" name="formats" value="json">
-                            <label for="formatJSON">📋 JSON</label>
-                        </div>
-                        <div class="format-option">
-                            <input type="checkbox" id="formatHTML" name="formats" value="html">
-                            <label for="formatHTML">🌐 HTML</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="cacheEnabled" name="cacheEnabled" checked>
-                        <label for="cacheEnabled">💾 Enable Caching (faster repeated analyses)</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="parallel" name="parallel" checked>
-                        <label for="parallel">⚡ Parallel Processing (faster analysis)</label>
-                    </div>
-                </div>
-
-                <button type="submit" id="analyzeBtn">
-                    🚀 Start Analysis
-                </button>
-            </form>
-
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar-wrapper">
-                    <div class="progress-bar" id="progressBar">0%</div>
-                </div>
-                <div class="progress-message" id="progressMessage">Initializing...</div>
-            </div>
-
-            <div class="result-container" id="resultContainer"></div>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" data-target="analyze-view">
+            Analyze Single
+          </div>
+          <div class="tab" data-target="compare-view">Compare Versions</div>
         </div>
 
-        <div class="card">
-            <h2 style="margin-bottom: 1rem;">✨ Features</h2>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon">🔍</div>
-                    <div class="feature-title">Comprehensive Analysis</div>
-                    <div class="feature-description">Discovers components, hooks, contexts, pages, and services</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🔗</div>
-                    <div class="feature-title">Dependency Graphs</div>
-                    <div class="feature-description">Visualizes relationships between modules</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-title">Multiple Formats</div>
-                    <div class="feature-description">Export as Markdown, JSON, or HTML</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">⚡</div>
-                    <div class="feature-title">Fast & Efficient</div>
-                    <div class="feature-description">Parallel processing with smart caching</div>
-                </div>
+        <div id="analyze-view" class="view active">
+          <div class="safety-badge">
+            🛡️ Safety Mode: Read-only analysis • No code modifications
+          </div>
+
+          <form id="analysisForm">
+            <div class="form-group">
+              <label for="rootDir">📁 Project Root Directory</label>
+              <input
+                type="text"
+                id="rootDir"
+                name="rootDir"
+                placeholder="C:\path\to\your\react\project"
+                required
+              />
+              <div class="input-hint">
+                Enter the full path to your React project
+              </div>
             </div>
+
+            <div class="form-group">
+              <label for="outputPath">📄 Output File Name</label>
+              <input
+                type="text"
+                id="outputPath"
+                name="outputPath"
+                placeholder="feature-catalog.md"
+                value="feature-catalog.md"
+              />
+              <div class="input-hint">
+                File will be saved in your project's root directory
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>📊 Output Formats</label>
+              <div class="format-options">
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="formatMarkdown"
+                    name="formats"
+                    value="markdown"
+                    checked
+                  />
+                  <label for="formatMarkdown">📝 Markdown</label>
+                </div>
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="formatJSON"
+                    name="formats"
+                    value="json"
+                  />
+                  <label for="formatJSON">📋 JSON</label>
+                </div>
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="formatHTML"
+                    name="formats"
+                    value="html"
+                  />
+                  <label for="formatHTML">🌐 HTML</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input
+                  type="checkbox"
+                  id="cacheEnabled"
+                  name="cacheEnabled"
+                  checked
+                />
+                <label for="cacheEnabled"
+                  >💾 Enable Caching (faster repeated analyses)</label
+                >
+              </div>
+              <div class="checkbox-group">
+                <input type="checkbox" id="parallel" name="parallel" checked />
+                <label for="parallel"
+                  >⚡ Parallel Processing (faster analysis)</label
+                >
+              </div>
+            </div>
+
+            <button type="submit" id="analyzeBtn">🚀 Start Analysis</button>
+          </form>
         </div>
 
-        <footer>
-            <p>Built with ❤️ for React developers</p>
-            <p><a href="https://github.com/kunalsuri/react-feature-discovery" target="_blank">GitHub Repository</a></p>
-        </footer>
+        <div id="compare-view" class="view">
+          <div class="safety-badge">
+            🛡️ Safety Mode: Read-only analysis • No code modifications
+          </div>
+          <form id="compareForm">
+            <div class="form-group">
+              <label for="rootDirA">📁 Source A (Original)</label>
+              <input
+                type="text"
+                id="rootDirA"
+                name="rootDirA"
+                required
+                placeholder="Path to original version"
+              />
+            </div>
+            <div class="form-group">
+              <label for="rootDirB">📁 Source B (New)</label>
+              <input
+                type="text"
+                id="rootDirB"
+                name="rootDirB"
+                required
+                placeholder="Path to new version"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="diffOutputPath">📄 Output File Name</label>
+              <input
+                type="text"
+                id="diffOutputPath"
+                name="diffOutputPath"
+                placeholder="diff-report.md"
+                value="diff-report.md"
+              />
+              <div class="input-hint">
+                File will be saved in Source A's directory
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>📊 Output Formats</label>
+              <div class="format-options">
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="diffFormatMarkdown"
+                    name="diffFormats"
+                    value="markdown"
+                    checked
+                  />
+                  <label for="diffFormatMarkdown">📝 Markdown</label>
+                </div>
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="diffFormatJSON"
+                    name="diffFormats"
+                    value="json"
+                  />
+                  <label for="diffFormatJSON">📋 JSON</label>
+                </div>
+                <div class="format-option">
+                  <input
+                    type="checkbox"
+                    id="diffFormatHTML"
+                    name="diffFormats"
+                    value="html"
+                  />
+                  <label for="diffFormatHTML">🌐 HTML</label>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="compareBtn">🚀 Start Comparison</button>
+          </form>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progressBar">0%</div>
+          </div>
+          <div class="progress-message" id="progressMessage">
+            Initializing...
+          </div>
+        </div>
+
+        <div class="result-container" id="resultContainer"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom: 1rem">✨ Features</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-title">Comprehensive Analysis</div>
+            <div class="feature-description">
+              Discovers components, hooks, contexts, pages, and services
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔗</div>
+            <div class="feature-title">Dependency Graphs</div>
+            <div class="feature-description">
+              Visualizes relationships between modules
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Multiple Formats</div>
+            <div class="feature-description">
+              Export as Markdown, JSON, or HTML
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Fast & Efficient</div>
+            <div class="feature-description">
+              Parallel processing with smart caching
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>Built with ❤️ for React developers</p>
+        <p>
+          <a
+            href="https://github.com/kunalsuri/react-feature-discovery"
+            target="_blank"
+            >GitHub Repository</a
+          >
+        </p>
+      </footer>
     </div>
 
     <script>
-        const form = document.getElementById('analysisForm');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressMessage = document.getElementById('progressMessage');
-        const resultContainer = document.getElementById('resultContainer');
-        const analyzeBtn = document.getElementById('analyzeBtn');
+      const form = document.getElementById('analysisForm');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressMessage = document.getElementById('progressMessage');
+      const resultContainer = document.getElementById('resultContainer');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const compareBtn = document.getElementById('compareBtn');
+      const compareForm = document.getElementById('compareForm');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(form);
-            const formats = [];
-            formData.getAll('formats').forEach(format => formats.push(format));
-            
-            if (formats.length === 0) {
-                alert('Please select at least one output format');
-                return;
-            }
+      // Tab switching
+      document.querySelectorAll('.tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+              document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+              document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+              tab.classList.add('active');
+              document.getElementById(tab.dataset.target).classList.add('active');
 
-            const config = {
-                rootDir: formData.get('rootDir'),
-                outputPath: formData.get('outputPath'),
-                outputFormats: formats,
-                cacheEnabled: formData.get('cacheEnabled') === 'on',
-                parallel: formData.get('parallel') === 'on'
-            };
+              // Reset result container when switching
+              resultContainer.classList.remove('active');
+              progressContainer.classList.remove('active');
+          });
+      });
 
-            // Validate directory first
-            try {
-                const validateResponse = await fetch('/api/validate-directory', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ directory: config.rootDir })
-                });
-                
-                const validateResult = await validateResponse.json();
-                if (!validateResult.valid) {
-                    alert('Error: ' + validateResult.error);
-                    return;
-                }
-            } catch (error) {
-                alert('Error validating directory: ' + error.message);
-                return;
-            }
+      form.addEventListener('submit', async (e) => {
+          e.preventDefault();
 
-            // Start analysis
-            analyzeBtn.disabled = true;
-            progressContainer.classList.add('active');
-            resultContainer.classList.remove('active');
-            resultContainer.innerHTML = '';
+          // Get form data
+          const formData = new FormData(form);
+          const formats = [];
+          formData.getAll('formats').forEach(format => formats.push(format));
 
-            try {
-                const response = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(config)
-                });
+          if (formats.length === 0) {
+              alert('Please select at least one output format');
+              return;
+          }
 
-                const { jobId } = await response.json();
-                
-                // Poll for progress
-                const pollInterval = setInterval(async () => {
-                    try {
-                        const statusResponse = await fetch(`/api/job/${jobId}`);
-                        const job = await statusResponse.json();
+          const config = {
+              rootDir: formData.get('rootDir'),
+              outputPath: formData.get('outputPath'),
+              outputFormats: formats,
+              cacheEnabled: formData.get('cacheEnabled') === 'on',
+              parallel: formData.get('parallel') === 'on'
+          };
 
-                        // Update progress
-                        progressBar.style.width = job.progress + '%';
-                        progressBar.textContent = job.progress + '%';
-                        progressMessage.textContent = job.message;
+          // Validate directory first
+          try {
+              const validateResponse = await fetch('/api/validate-directory', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ directory: config.rootDir })
+              });
 
-                        // Check if complete
-                        if (job.status === 'completed') {
-                            clearInterval(pollInterval);
-                            showSuccess(job);
-                            analyzeBtn.disabled = false;
-                        } else if (job.status === 'failed') {
-                            clearInterval(pollInterval);
-                            showError(job);
-                            analyzeBtn.disabled = false;
-                        }
-                    } catch (error) {
-                        clearInterval(pollInterval);
-                        showError({ error: error.message });
-                        analyzeBtn.disabled = false;
-                    }
-                }, 500);
+              const validateResult = await validateResponse.json();
+              if (!validateResult.valid) {
+                  alert('Error: ' + validateResult.error);
+                  return;
+              }
+          } catch (error) {
+              alert('Error validating directory: ' + error.message);
+              return;
+          }
 
-            } catch (error) {
-                showError({ error: error.message });
-                analyzeBtn.disabled = false;
-            }
-        });
+          // Start analysis
+          analyzeBtn.disabled = true;
+          progressContainer.classList.add('active');
+          resultContainer.classList.remove('active');
+          resultContainer.innerHTML = '';
 
-        function showSuccess(job) {
-            resultContainer.classList.add('active');
-            
-            // Extract directory from full path
-            const lastSlash = Math.max(job.result.outputPath.lastIndexOf('\\'), job.result.outputPath.lastIndexOf('/'));
-            const outputDir = job.result.outputPath.substring(0, lastSlash);
-            
-            resultContainer.innerHTML = `
-                <div class="result-success">
-                    <div class="result-title">
-                        ✅ Analysis Complete!
-                    </div>
-                    <p>Your React codebase has been analyzed successfully.</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">
-                        📁 <strong>Saved to your project directory:</strong><br>
-                        <code style="background: var(--background); padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.5rem;">${outputDir}</code>
-                    </p>
-                    <div class="file-links">
-                        ${job.result.formats.map(format => {
-                            const ext = format === 'markdown' ? 'md' : format;
-                            const icon = format === 'markdown' ? '📝' : format === 'json' ? '📋' : '🌐';
-                            const outputPath = job.result.outputPath.replace(/\.[^.]+$/, `.${ext}`);
-                            return `
-                                <a href="/api/result/${encodeURIComponent(outputPath)}" target="_blank" class="file-link">
-                                    ${icon} Open ${format.toUpperCase()}
-                                </a>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
-        }
+          try {
+              const response = await fetch('/api/analyze', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(config)
+              });
 
-        function showError(job) {
-            resultContainer.classList.add('active');
-            resultContainer.innerHTML = `
-                <div class="result-error">
-                    <div class="result-title">
-                        ❌ Analysis Failed
-                    </div>
-                    <p>${job.error || 'An unknown error occurred'}</p>
-                </div>
-            `;
-        }
+              const { jobId } = await response.json();
+              pollJob(jobId, analyzeBtn);
 
-        // Auto-fill current directory on Windows
-        if (window.location.hostname === 'localhost') {
-            const rootDirInput = document.getElementById('rootDir');
-            if (!rootDirInput.value) {
-                // You can set a default if needed
-                rootDirInput.placeholder = 'e.g., C:\\Users\\YourName\\Projects\\my-react-app';
-            }
-        }
+          } catch (error) {
+              showError({ error: error.message });
+              analyzeBtn.disabled = false;
+          }
+      });
+
+      compareForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(compareForm);
+          
+          // Get selected formats
+          const formats = [];
+          formData.getAll('diffFormats').forEach(format => formats.push(format));
+
+          if (formats.length === 0) {
+              alert('Please select at least one output format');
+              return;
+          }
+
+          const configA = { 
+            rootDir: formData.get('rootDirA'),
+            outputFormats: formats,
+            outputPath: formData.get('diffOutputPath')
+          };
+          const configB = { 
+            rootDir: formData.get('rootDirB')
+          };
+
+          compareBtn.disabled = true;
+          progressContainer.classList.add('active');
+          resultContainer.classList.remove('active');
+          resultContainer.innerHTML = '';
+
+          try {
+              const response = await fetch('/api/compare', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ configA, configB })
+              });
+
+              const { jobId } = await response.json();
+              pollJob(jobId, compareBtn);
+          } catch (error) {
+              showError({ error: error.message });
+              compareBtn.disabled = false;
+          }
+      });
+
+      function pollJob(jobId, btn) {
+          const pollInterval = setInterval(async () => {
+              try {
+                  const statusResponse = await fetch(`/api/job/${jobId}`);
+                  const job = await statusResponse.json();
+
+                  progressBar.style.width = job.progress + '%';
+                  progressBar.textContent = job.progress + '%';
+                  progressMessage.textContent = job.message;
+
+                  if (job.status === 'completed') {
+                      clearInterval(pollInterval);
+                      if (job.type === 'comparison') {
+                          showDiffResult(job);
+                      } else {
+                          showSuccess(job);
+                      }
+                      btn.disabled = false;
+                  } else if (job.status === 'failed') {
+                      clearInterval(pollInterval);
+                      showError(job);
+                      btn.disabled = false;
+                  }
+              } catch (error) {
+                  clearInterval(pollInterval);
+                  showError({ error: error.message });
+                  btn.disabled = false;
+              }
+          }, 500);
+      }
+
+      function showDiffResult(job) {
+          resultContainer.classList.add('active');
+          const diff = job.result;
+
+          // Generate download links if files were generated
+          let downloadLinks = '';
+          if (diff.generatedFiles && diff.generatedFiles.length > 0) {
+              downloadLinks = `
+                  <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                      <p style="margin-bottom: 0.75rem;"><strong>📥 Download Reports:</strong></p>
+                      <div class="file-links">
+                          ${diff.generatedFiles.map(filePath => {
+                              const ext = filePath.split('.').pop();
+                              const icon = ext === 'md' ? '📝' : ext === 'json' ? '📋' : '🌐';
+                              const format = ext === 'md' ? 'Markdown' : ext === 'json' ? 'JSON' : 'HTML';
+                              return `
+                                  <a href="/api/result/${encodeURIComponent(filePath)}" target="_blank" class="file-link">
+                                      ${icon} Open ${format}
+                                  </a>
+                              `;
+                          }).join('')}
+                      </div>
+                  </div>
+              `;
+          }
+
+          resultContainer.innerHTML = `
+              <div class="result-success">
+                  <div class="result-title">✅ Comparison Complete!</div>
+                  <div style="margin: 1rem 0;">
+                      <span class="stat added">+${diff.summary.added} Added</span>
+                      <span class="stat removed">-${diff.summary.removed} Removed</span>
+                      <span class="stat modified">~${diff.summary.modified} Modified</span>
+                  </div>
+
+                  <h3>Changes</h3>
+                  ${renderChanges(diff.changes)}
+                  
+                  ${downloadLinks}
+              </div>
+          `;
+      }
+
+      function renderChanges(changes) {
+          let html = '';
+          for (const [category, items] of Object.entries(changes)) {
+              if (items.length > 0) {
+                  html += `<h4>${category.charAt(0).toUpperCase() + category.slice(1)}</h4><ul>`;
+                  items.forEach(item => {
+                      const color = item.type === 'added' ? 'var(--success)' : item.type === 'removed' ? 'var(--error)' : 'var(--warning)';
+                      html += `<li style="color: ${color}">${item.type.toUpperCase()}: ${item.feature.name}</li>`;
+                  });
+                  html += '</ul>';
+              }
+          }
+          return html || '<p>No changes found.</p>';
+      }
+
+      function showSuccess(job) {
+          resultContainer.classList.add('active');
+
+          // Extract directory from full path
+          const lastSlash = Math.max(job.result.outputPath.lastIndexOf('\\'), job.result.outputPath.lastIndexOf('/'));
+          const outputDir = job.result.outputPath.substring(0, lastSlash);
+
+          resultContainer.innerHTML = `
+              <div class="result-success">
+                  <div class="result-title">
+                      ✅ Analysis Complete!
+                  </div>
+                  <p>Your React codebase has been analyzed successfully.</p>
+                  <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+                      📁 <strong>Saved to your project directory:</strong><br>
+                      <code style="background: var(--background); padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.5rem;">${outputDir}</code>
+                  </p>
+                  <div class="file-links">
+                      ${job.result.formats.map(format => {
+                          const ext = format === 'markdown' ? 'md' : format;
+                          const icon = format === 'markdown' ? '📝' : format === 'json' ? '📋' : '🌐';
+                          const outputPath = job.result.outputPath.replace(/\.[^.]+$/, `.${ext}`);
+                          return `
+                              <a href="/api/result/${encodeURIComponent(outputPath)}" target="_blank" class="file-link">
+                                  ${icon} Open ${format.toUpperCase()}
+                              </a>
+                          `;
+                      }).join('')}
+                  </div>
+              </div>
+          `;
+      }
+
+      function showError(job) {
+          resultContainer.classList.add('active');
+          resultContainer.innerHTML = `
+              <div class="result-error">
+                  <div class="result-title">
+                      ❌ Analysis Failed
+                  </div>
+                  <p>${job.error || 'An unknown error occurred'}</p>
+              </div>
+          `;
+      }
+
+      // Auto-fill current directory on Windows
+      if (window.location.hostname === 'localhost') {
+          const rootDirInput = document.getElementById('rootDir');
+          if (!rootDirInput.value) {
+              // You can set a default if needed
+              rootDirInput.placeholder = 'e.g., C:\\Users\\YourName\\Projects\\my-react-app';
+          }
+      }
     </script>
-</body>
+  </body>
 </html>

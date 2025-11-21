@@ -11,7 +11,11 @@ import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { ConfigLoader, ConfigValidator, ConfigMerger, defaultConfig } from './config/index.js';
 import { AnalysisEngine } from './core/AnalysisEngine.js';
+import { FeatureDiff } from './core/FeatureDiff.js';
 import { SafetyValidator } from './utils/SafetyValidator.js';
+import { DiffMarkdownGenerator } from './generators/DiffMarkdownGenerator.js';
+import { DiffJSONGenerator } from './generators/DiffJSONGenerator.js';
+import { DiffHTMLGenerator } from './generators/DiffHTMLGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -207,6 +211,44 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // API: Compare two codebases
+  if (req.url === '/api/compare' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { configA, configB } = JSON.parse(body);
+        
+        if (!configA?.rootDir || !configB?.rootDir) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Both configA and configB must have rootDir' }));
+          return;
+        }
+
+        const jobId = Date.now().toString();
+        
+        analysisJobs.set(jobId, {
+          status: 'running',
+          progress: 0,
+          message: 'Starting comparison...',
+          result: null,
+          error: null,
+          type: 'comparison'
+        });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ jobId }));
+
+        runComparison(jobId, configA, configB);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: message }));
+      }
+    });
+    return;
+  }
+
   // 404
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('Not found');
@@ -268,6 +310,97 @@ async function runAnalysis(jobId: string, config: any) {
     job.status = 'failed';
     job.error = message;
     job.message = 'Analysis failed';
+  }
+}
+
+async function runComparison(jobId: string, configA: any, configB: any) {
+  const job = analysisJobs.get(jobId);
+  
+  try {
+    // Run Analysis A
+    job.message = 'Analyzing Source A...';
+    job.progress = 10;
+    
+    // Merge config A
+    const merger = new ConfigMerger();
+    const mergedConfigA = merger.merge(defaultConfig, configA);
+    // Ensure output path is set (even if not used for diff, engine needs it)
+    if (!mergedConfigA.outputPath) mergedConfigA.outputPath = path.join(mergedConfigA.rootDir, 'feature-catalog-a.md');
+
+    const engineA = new AnalysisEngine(mergedConfigA);
+    const catalogA = await engineA.analyze();
+
+    // Run Analysis B
+    job.message = 'Analyzing Source B...';
+    job.progress = 50;
+
+    // Merge config B
+    const mergedConfigB = merger.merge(defaultConfig, configB);
+    if (!mergedConfigB.outputPath) mergedConfigB.outputPath = path.join(mergedConfigB.rootDir, 'feature-catalog-b.md');
+
+    const engineB = new AnalysisEngine(mergedConfigB);
+    const catalogB = await engineB.analyze();
+
+    // Compare
+    job.message = 'Comparing features...';
+    job.progress = 80;
+    const diff = FeatureDiff.compare(catalogA, catalogB);
+
+    // Generate output files if formats are specified
+    const outputFormats = configA.outputFormats || configB.outputFormats || ['markdown'];
+    const outputPath = configA.outputPath || configB.outputPath || path.join(mergedConfigA.rootDir, 'diff-report.md');
+    const generatedFiles: string[] = [];
+
+    if (outputFormats.length > 0) {
+      job.message = 'Generating diff reports...';
+      job.progress = 90;
+
+      for (const format of outputFormats) {
+        const ext = format === 'markdown' ? 'md' : format;
+        const filePath = outputPath.replace(/\.[^.]+$/, `.${ext}`);
+
+        try {
+          switch (format) {
+            case 'markdown':
+              const mdGenerator = new DiffMarkdownGenerator();
+              const markdown = mdGenerator.generateMarkdown(diff);
+              mdGenerator.writeToFile(markdown, filePath);
+              generatedFiles.push(filePath);
+              break;
+
+            case 'json':
+              const jsonGenerator = new DiffJSONGenerator();
+              const json = jsonGenerator.generateJSON(diff);
+              jsonGenerator.writeToFile(json, filePath);
+              generatedFiles.push(filePath);
+              break;
+
+            case 'html':
+              const htmlGenerator = new DiffHTMLGenerator();
+              const html = htmlGenerator.generateHTML(diff);
+              htmlGenerator.writeToFile(html, filePath);
+              generatedFiles.push(filePath);
+              break;
+          }
+        } catch (error) {
+          console.error(`Failed to generate ${format} diff report:`, error);
+        }
+      }
+    }
+
+    job.status = 'completed';
+    job.progress = 100;
+    job.message = 'Comparison complete!';
+    job.result = {
+      ...diff,
+      generatedFiles
+    };
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    job.status = 'failed';
+    job.error = message;
+    job.message = 'Comparison failed';
   }
 }
 

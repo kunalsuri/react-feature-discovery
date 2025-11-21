@@ -3,7 +3,7 @@
  */
 
 import * as fs from 'fs';
-import { ToolConfig } from '../types/index.js';
+import { ToolConfig, FeatureCatalog } from '../types/index.js';
 import { FileScanner } from '../scanners/FileScanner.js';
 import { DependencyAnalyzer } from '../analyzers/DependencyAnalyzer.js';
 import { MetadataExtractor } from '../analyzers/MetadataExtractor.js';
@@ -23,7 +23,7 @@ export class AnalysisEngine {
     this.errorHandler = new ErrorHandler();
   }
 
-  async analyze(): Promise<void> {
+  async analyze(): Promise<FeatureCatalog> {
     console.log('🔍 Starting React Feature Discovery Analysis...\n');
     console.log('🛡️  Safety Mode: ENABLED (Read-only analysis, no code modifications)\n');
     console.log(`📁 Root Directory: ${this.config.rootDir}`);
@@ -178,6 +178,8 @@ export class AnalysisEngine {
       console.log(`   - Hooks: ${catalog.features.hooks.length}`);
       console.log(`   - Utilities: ${catalog.features.utilities.length}`);
       console.log(`   - Types: ${catalog.features.types.length}`);
+
+      return catalog;
 
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

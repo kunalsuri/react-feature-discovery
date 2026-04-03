@@ -95,10 +95,12 @@ export const defaultCategoryRules: CategoryRule[] = [
 ];
 
 /**
- * Apply category rules to a file path
+ * Apply category rules to a file path.
+ * IMPORTANT: `rules` must already be sorted by priority (descending).
+ * Sorting is performed once during FileScanner construction — not here.
  * @param filePath Relative file path
  * @param fileName File name
- * @param rules Category rules to apply
+ * @param rules Pre-sorted category rules
  * @returns Matched category
  */
 export function applyCategoryRules(
@@ -110,11 +112,8 @@ export function applyCategoryRules(
   const lowerName = fileName.toLowerCase();
   const fullPath = `${lowerPath}/${lowerName}`;
   
-  // Sort rules by priority (descending)
-  const sortedRules = [...rules].sort((a, b) => b.priority - a.priority);
-  
-  // Find first matching rule
-  for (const rule of sortedRules) {
+  // Rules are expected to already be sorted by priority (descending)
+  for (const rule of rules) {
     const regex = typeof rule.pattern === 'string'
       ? new RegExp(rule.pattern)
       : rule.pattern;

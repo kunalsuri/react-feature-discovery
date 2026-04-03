@@ -131,11 +131,31 @@ export class SafetyValidator {
   }
 
   /**
-   * Sanitizes user input to prevent path traversal attacks
+   * Sanitizes and validates a user-supplied path.
+   * H4: Uses path.resolve + prefix assertion instead of naive regex stripping.
+   *
+   * @param inputPath  The user-supplied path to sanitize
+   * @param allowedBase  Optional base directory the resolved path must reside within.
+   *                     If provided and the path escapes this base, an error is thrown.
+   * @returns The resolved absolute path
+   * @throws Error if the resolved path escapes allowedBase
    */
-  static sanitizePath(inputPath: string): string {
-    // Remove any path traversal attempts
-    return inputPath.replace(/\.\./g, '').replace(/[<>:"|?*]/g, '');
+  static sanitizePath(inputPath: string, allowedBase?: string): string {
+    const resolved = path.resolve(inputPath);
+
+    if (allowedBase) {
+      const base = path.resolve(allowedBase);
+      // The resolved path must start with base + separator (or equal base exactly)
+      const isWithinBase = resolved === base || resolved.startsWith(base + path.sep);
+      if (!isWithinBase) {
+        throw new Error(
+          `Path traversal detected: '${inputPath}' resolves to '${resolved}' ` +
+          `which is outside the allowed base '${base}'.`
+        );
+      }
+    }
+
+    return resolved;
   }
 
   /**

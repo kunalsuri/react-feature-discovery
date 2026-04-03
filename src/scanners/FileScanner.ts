@@ -1,6 +1,7 @@
 /**
  * FileScanner - Scans and categorizes files in the codebase
- * Updated to use configurable category rules
+ * M8: Category rules are sorted once during construction, not per-file invocation.
+ * L4: Directory traversal uses fs.promises (async) instead of readdirSync.
  */
 
 import * as fs from 'fs';
@@ -15,21 +16,22 @@ export class FileScanner {
 
   constructor(config: ToolConfig) {
     this.config = config;
-    
-    // Merge custom category rules with defaults
+    // M8: rules are sorted once here — not on every applyCategoryRules() call
     this.categoryRules = this.mergeCategoryRules();
   }
 
   private mergeCategoryRules(): CategoryRule[] {
     const rules = [...defaultCategoryRules];
     
-    // Add custom category rules if provided
+    // Merge custom category rules if provided
     if (this.config.customCategories) {
-      for (const [name, rule] of Object.entries(this.config.customCategories)) {
+      for (const [, rule] of Object.entries(this.config.customCategories)) {
         rules.push(rule);
       }
     }
-    
+
+    // M8: sort by priority (descending) once, here, not inside applyCategoryRules
+    rules.sort((a, b) => b.priority - a.priority);
     return rules;
   }
 
@@ -39,15 +41,15 @@ export class FileScanner {
     return files;
   }
 
+  // L4: async traversal using fs.promises.readdir
   private async traverseDirectory(dir: string, files: FileEntry[]): Promise<void> {
     try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const entries = await fs.promises.readdir(dir, { withFileTypes: true });
 
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         const relativePath = path.relative(this.config.rootDir, fullPath);
 
-        // Skip excluded directories
         if (entry.isDirectory()) {
           if (this.shouldExcludeDirectory(entry.name, relativePath)) {
             continue;
@@ -55,7 +57,7 @@ export class FileScanner {
           await this.traverseDirectory(fullPath, files);
         } else if (entry.isFile()) {
           if (this.shouldIncludeFile(entry.name)) {
-            const fileEntry = this.createFileEntry(fullPath, relativePath, entry.name);
+            const fileEntry = await this.createFileEntry(fullPath, relativePath, entry.name);
             files.push(fileEntry);
           }
         }
@@ -67,25 +69,21 @@ export class FileScanner {
   }
 
   private shouldExcludeDirectory(name: string, relativePath: string): boolean {
-    // Check if directory name is in exclude list
     if (this.config.excludeDirs.includes(name)) {
       return true;
     }
-    
-    // Check if any part of the path matches exclude patterns
     const pathParts = relativePath.split(path.sep);
     return pathParts.some(part => this.config.excludeDirs.includes(part));
   }
 
   private shouldIncludeFile(name: string): boolean {
     const ext = path.extname(name);
-    
-    // Support both TypeScript and JavaScript files
     return ['.ts', '.tsx', '.js', '.jsx'].includes(ext);
   }
 
-  private createFileEntry(fullPath: string, relativePath: string, name: string): FileEntry {
-    const stats = fs.statSync(fullPath);
+  // L4: uses fs.promises.stat instead of statSync
+  private async createFileEntry(fullPath: string, relativePath: string, name: string): Promise<FileEntry> {
+    const stats = await fs.promises.stat(fullPath);
     const extension = path.extname(name);
     const category = this.categorizeFile(relativePath, name);
 
@@ -99,7 +97,7 @@ export class FileScanner {
     };
   }
 
-  // UPDATED: Use configurable category rules
+  // M8: passes the pre-sorted rules — no sort inside applyCategoryRules
   categorizeFile(relativePath: string, fileName: string): string {
     return applyCategoryRules(relativePath, fileName, this.categoryRules);
   }

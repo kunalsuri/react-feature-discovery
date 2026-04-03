@@ -203,7 +203,9 @@ export type ErrorType =
   | 'LONG_ERROR'
   | 'SPECIAL_ERROR'
   | 'UNICODE_ERROR'
-  | string; // Allow any string for test flexibility
+  | 'ERROR_1'
+  | 'ERROR_2'
+  | 'ERROR_3';
 
 // Re-export config types
 export * from './config.js';

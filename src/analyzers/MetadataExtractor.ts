@@ -1,6 +1,7 @@
 /**
  * MetadataExtractor - Extracts metadata from source files
- * Updated to use configurable environment patterns instead of hard-coded checks
+ * M7: Regex patterns are pre-compiled once in the constructor (not per-file).
+ * Updated to use configurable environment patterns instead of hard-coded checks.
  */
 
 import * as path from 'path';
@@ -15,9 +16,25 @@ import {
   MigrationRule
 } from '../types/index.js';
 
+// Pre-compiled pattern store
+interface CompiledPattern {
+  regex: RegExp;
+  message: string;
+}
+
+interface CompiledMigrationRule {
+  regex: RegExp;
+  message: string;
+  recommendation: string;
+}
+
 export class MetadataExtractor {
   private environmentPatterns: EnvironmentPattern[];
   private customMigrationRules: MigrationRule[];
+
+  // M7: pre-compiled at construction time — not inside per-file loops
+  private compiledEnvironmentPatterns: CompiledPattern[];
+  private compiledMigrationRules: CompiledMigrationRule[];
 
   constructor(
     environmentPatterns: EnvironmentPattern[] = [],
@@ -25,6 +42,19 @@ export class MetadataExtractor {
   ) {
     this.environmentPatterns = environmentPatterns;
     this.customMigrationRules = customMigrationRules;
+
+    // Compile environment patterns once
+    this.compiledEnvironmentPatterns = environmentPatterns.map(p => ({
+      regex: typeof p.pattern === 'string' ? new RegExp(p.pattern) : p.pattern,
+      message: p.message
+    }));
+
+    // Compile migration rules once
+    this.compiledMigrationRules = customMigrationRules.map(r => ({
+      regex: typeof r.pattern === 'string' ? new RegExp(r.pattern) : r.pattern,
+      message: r.message,
+      recommendation: r.recommendation
+    }));
   }
 
   extractMetadata(
@@ -189,29 +219,21 @@ export class MetadataExtractor {
     };
   }
 
-  // UPDATED: Use configurable environment patterns instead of hard-coded checks
+  // M7: uses pre-compiled patterns — no RegExp construction per file
   generateMigrationNotes(fileContent: string, filePath: string, dependencies: Dependencies): string[] {
     const notes: string[] = [];
 
-    // Check for environment-specific code using configurable patterns
-    for (const pattern of this.environmentPatterns) {
-      const regex = typeof pattern.pattern === 'string' 
-        ? new RegExp(pattern.pattern) 
-        : pattern.pattern;
-      
+    // Use pre-compiled environment patterns
+    for (const { regex, message } of this.compiledEnvironmentPatterns) {
       if (regex.test(fileContent)) {
-        notes.push(pattern.message);
+        notes.push(message);
       }
     }
 
-    // Apply custom migration rules
-    for (const rule of this.customMigrationRules) {
-      const regex = typeof rule.pattern === 'string'
-        ? new RegExp(rule.pattern)
-        : rule.pattern;
-      
+    // Use pre-compiled migration rules
+    for (const { regex, message, recommendation } of this.compiledMigrationRules) {
       if (regex.test(fileContent)) {
-        notes.push(`${rule.message} - ${rule.recommendation}`);
+        notes.push(`${message} - ${recommendation}`);
       }
     }
 

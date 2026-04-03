@@ -2,25 +2,22 @@
  * SafetyValidator Tests
  */
 
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { SafetyValidator } from '../../src/utils/SafetyValidator';
 import { ToolConfig } from '../../src/types/index';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Mock fs and path modules
+// Only mock fs — do NOT mock path, as SafetyValidator uses path.resolve internally
 jest.mock('fs');
-jest.mock('path');
 
 const mockFs = fs as jest.Mocked<typeof fs>;
-const mockPath = path as jest.Mocked<typeof path>;
 
 describe('SafetyValidator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
-    // Setup default mocks
-    mockPath.resolve.mockImplementation((p: string) => p);
+    // Setup default fs mocks
     mockFs.existsSync.mockReturnValue(true);
     mockFs.statSync.mockReturnValue({
       isDirectory: () => true
@@ -76,8 +73,6 @@ describe('SafetyValidator', () => {
     });
 
     it('should reject subdirectories of system directories', () => {
-      mockPath.resolve.mockImplementation((p: string) => p);
-      
       const result = SafetyValidator.validateRootDirectory('/usr/local/bin');
       
       expect(result.valid).toBe(false);

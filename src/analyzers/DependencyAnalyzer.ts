@@ -137,11 +137,14 @@ export class DependencyAnalyzer {
     }
   }
 
-  private inferDependencyType(filePath: string): 'component' | 'hook' | 'utility' | 'type' | 'service' {
+  private inferDependencyType(filePath: string): 'component' | 'hook' | 'utility' | 'type' | 'service' | 'context' {
     const lowerPath = filePath.toLowerCase();
     
     if (lowerPath.includes('hook') || path.basename(lowerPath).startsWith('use')) {
       return 'hook';
+    }
+    if (lowerPath.includes('context') || lowerPath.includes('.context.')) {
+      return 'context';
     }
     if (lowerPath.includes('service') || lowerPath.includes('api')) {
       return 'service';

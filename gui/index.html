@@ -767,18 +767,22 @@
           }
       });
 
+      // L5: Use Server-Sent Events for real-time job progress.
+      // Falls back to HTTP polling if EventSource is unavailable.
       function pollJob(jobId, btn) {
-          const pollInterval = setInterval(async () => {
-              try {
-                  const statusResponse = await fetch(`/api/job/${jobId}`);
-                  const job = await statusResponse.json();
+          if (typeof EventSource !== 'undefined') {
+              // SSE path — server pushes updates
+              const es = new EventSource(`/api/events/${jobId}`);
 
+              es.onmessage = (event) => {
+                  const job = JSON.parse(event.data);
                   progressBar.style.width = job.progress + '%';
                   progressBar.textContent = job.progress + '%';
                   progressMessage.textContent = job.message;
 
                   if (job.status === 'completed') {
-                      clearInterval(pollInterval);
+                      es.close();
+                      progressContainer.classList.remove('active');
                       if (job.type === 'comparison') {
                           showDiffResult(job);
                       } else {
@@ -786,16 +790,50 @@
                       }
                       btn.disabled = false;
                   } else if (job.status === 'failed') {
-                      clearInterval(pollInterval);
+                      es.close();
+                      progressContainer.classList.remove('active');
                       showError(job);
                       btn.disabled = false;
                   }
-              } catch (error) {
-                  clearInterval(pollInterval);
-                  showError({ error: error.message });
+              };
+
+              es.onerror = () => {
+                  es.close();
+                  progressContainer.classList.remove('active');
+                  showError({ error: 'Connection to server lost. Please try again.' });
                   btn.disabled = false;
-              }
-          }, 500);
+              };
+          } else {
+              // Polling fallback for environments without EventSource
+              const pollInterval = setInterval(async () => {
+                  try {
+                      const statusResponse = await fetch(`/api/job/${jobId}`);
+                      const job = await statusResponse.json();
+
+                      progressBar.style.width = job.progress + '%';
+                      progressBar.textContent = job.progress + '%';
+                      progressMessage.textContent = job.message;
+
+                      if (job.status === 'completed') {
+                          clearInterval(pollInterval);
+                          if (job.type === 'comparison') {
+                              showDiffResult(job);
+                          } else {
+                              showSuccess(job);
+                          }
+                          btn.disabled = false;
+                      } else if (job.status === 'failed') {
+                          clearInterval(pollInterval);
+                          showError(job);
+                          btn.disabled = false;
+                      }
+                  } catch (error) {
+                      clearInterval(pollInterval);
+                      showError({ error: error.message });
+                      btn.disabled = false;
+                  }
+              }, 500);
+          }
       }
 
       function showDiffResult(job) {

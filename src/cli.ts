@@ -8,6 +8,10 @@ import { ConfigLoader, ConfigValidator, ConfigMerger, defaultConfig } from './co
 import { AnalysisEngine } from './core/AnalysisEngine.js';
 import { PartialToolConfig } from './types/index.js';
 import { SafetyValidator } from './utils/SafetyValidator.js';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { version: CLI_VERSION } = require('../package.json') as { version: string };
 
 async function main(): Promise<number> {
   const args = process.argv.slice(2);
@@ -20,7 +24,7 @@ async function main(): Promise<number> {
   
   // Show version
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('react-feature-discovery v0.1.0');
+    console.log(`react-feature-discovery v${CLI_VERSION}`);
     return 0;
   }
 

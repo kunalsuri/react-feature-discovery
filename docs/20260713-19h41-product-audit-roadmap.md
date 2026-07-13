@@ -80,7 +80,7 @@ Green CI and honest test coverage are prerequisites, not nice-to-haves — every
 Effort scale: **S** = hours, **M** = 1-2 focused sessions, **L** = multi-session/day(s) of work.
 
 ### Phase 0 — Foundation (do first, blocks everything else)
-1. **[S] `npm audit fix`** for the two dev-only vulnerabilities (`@babel/core`, `js-yaml` transitive deps via `ts-jest`). Zero risk, immediate hygiene win.
+1. **[S] `npm audit fix`** for the two dev-only vulnerabilities (`@babel/core`, `js-yaml` transitive deps via `ts-jest`). Zero risk, immediate hygiene win. ✅ **DONE (2026-07-13)** — ran `npm audit fix`, `package-lock.json` updated (22 packages changed), `npm audit` now reports 0 vulnerabilities. Build (`npm run build`) and typecheck (`npx tsc --noEmit`) both still pass clean.
 2. **[S] Bump `engines.node` to `>=22.0.0`** and update the CI matrix from `[18.x, 20.x, 22.x]` to `[22.x, 24.x]`, dropping EOL Node 18 and stale Node 20. *Why:* testing against a dead runtime provides false confidence; Node 24 is the current Active-LTS recommendation.
 3. **[M] Triage and fix the 82 failing tests** *before* the parser rewrite, so there's a real green baseline to diff against. Where a test encodes a genuinely wrong expectation (e.g. `HTMLGenerator` test asserting removed copy), fix the test; where it caught a real bug, fix the code.
 4. **[S] Get CI green** and confirmed on a fresh push — this has never happened once in this repo's history, so it needs to be explicitly verified, not assumed.

@@ -1,0 +1,1 @@
+This is Claude Code's project config folder. It currently holds `skills/` (see `skills/multi-agent-docs/`). Add `commands/` or `agents/` subfolders here once there's an actual slash command or subagent to put in one — don't create them speculatively.

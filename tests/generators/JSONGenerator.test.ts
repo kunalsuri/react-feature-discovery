@@ -2,22 +2,35 @@
  * JSONGenerator Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { JSONGenerator } from '../../src/generators/JSONGenerator';
-import { FeatureCatalog } from '../../src/types/index';
-import * as fs from 'fs';
+import { describe, it, expect, jest, beforeEach, beforeAll } from '@jest/globals';
+import type { FeatureCatalog } from '../../src/types/index';
 
-// Mock fs module
-jest.mock('fs');
-const mockFs = fs as jest.Mocked<typeof fs>;
+// Mock fs module (ESM-compatible: jest.mock('fs') doesn't produce real
+// jest.fn() mocks for core builtins under --experimental-vm-modules, so we
+// use jest.unstable_mockModule + dynamic import instead).
+const mockWriteFileSync = jest.fn();
+
+jest.unstable_mockModule('fs', () => ({
+  ...(jest.requireActual('fs') as object),
+  writeFileSync: mockWriteFileSync
+}));
+
+const mockFs = { writeFileSync: mockWriteFileSync };
+
+let JSONGenerator: typeof import('../../src/generators/JSONGenerator').JSONGenerator;
+
+beforeAll(async () => {
+  ({ JSONGenerator } = await import('../../src/generators/JSONGenerator'));
+});
 
 describe('JSONGenerator', () => {
-  let generator: JSONGenerator;
+  let generator: InstanceType<typeof JSONGenerator>;
   let mockCatalog: FeatureCatalog;
 
   beforeEach(() => {
+    mockWriteFileSync.mockReset();
     generator = new JSONGenerator();
-    
+
     mockCatalog = {
       metadata: {
         projectName: 'Test Project',

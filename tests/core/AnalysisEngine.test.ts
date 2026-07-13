@@ -2,33 +2,115 @@
  * AnalysisEngine Tests
  */
 
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
-import { AnalysisEngine } from '../../src/core/AnalysisEngine';
-import { ToolConfig } from '../../src/types';
-import * as fs from 'fs';
+import { describe, it, expect, jest, beforeEach, afterEach, beforeAll } from '@jest/globals';
+import type { ToolConfig } from '../../src/types';
+import * as path from 'path';
 
-// Mock dependencies
-jest.mock('../../src/scanners/FileScanner');
-jest.mock('../../src/analyzers/DependencyAnalyzer');
-jest.mock('../../src/analyzers/MetadataExtractor');
-jest.mock('../../src/analyzers/CatalogBuilder');
-jest.mock('../../src/generators/MarkdownGenerator');
-jest.mock('../../src/generators/JSONGenerator');
-jest.mock('../../src/generators/HTMLGenerator');
-jest.mock('../../src/utils/ErrorHandler');
-jest.mock('../../src/utils/SafetyValidator');
-jest.mock('fs');
+// jest.unstable_mockModule needs a specifier that resolves to the exact same
+// module the code under test imports. Relative specifiers combined with this
+// project's moduleNameMapper (which strips the .js suffix off relative
+// imports) don't resolve reliably from unstable_mockModule's call site, so
+// mock registration uses absolute paths to the TS sources instead.
+const srcPath = (relativeToSrc: string) => path.resolve(process.cwd(), 'src', relativeToSrc);
 
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+// --- ESM-compatible mocking -------------------------------------------------
+// This file exercises AnalysisEngine's orchestration of several collaborator
+// classes plus fs.promises. Under this project's ESM Jest setup
+// (--experimental-vm-modules), top-level synchronous jest.mock(...) +
+// require(...) (the CJS pattern this file used previously) doesn't hoist/
+// intercept ES module imports. The documented ESM-compatible replacement is
+// jest.unstable_mockModule(...) registered before dynamically importing the
+// module under test.
+const FileScannerMock = jest.fn();
+const DependencyAnalyzerMock = jest.fn();
+const MetadataExtractorMock = jest.fn();
+const CatalogBuilderMock = jest.fn();
+const MarkdownWriterMock = jest.fn();
+const JSONGeneratorMock = jest.fn();
+const HTMLGeneratorMock = jest.fn();
+const ErrorHandlerMock = jest.fn();
+
+const mockValidateEnvironment = jest.fn();
+const mockValidateConfig = jest.fn();
+const mockValidateOutputPath = jest.fn();
+const mockValidateReadPath = jest.fn();
+const mockEnsureSafeOutputDirectory = jest.fn();
+
+const mockReadFile = jest.fn() as any;
+
+jest.unstable_mockModule(srcPath('scanners/FileScanner.ts'), () => ({
+  FileScanner: FileScannerMock
+}));
+jest.unstable_mockModule(srcPath('analyzers/DependencyAnalyzer.ts'), () => ({
+  DependencyAnalyzer: DependencyAnalyzerMock
+}));
+jest.unstable_mockModule(srcPath('analyzers/MetadataExtractor.ts'), () => ({
+  MetadataExtractor: MetadataExtractorMock
+}));
+jest.unstable_mockModule(srcPath('analyzers/CatalogBuilder.ts'), () => ({
+  CatalogBuilder: CatalogBuilderMock
+}));
+jest.unstable_mockModule(srcPath('generators/MarkdownGenerator.ts'), () => ({
+  MarkdownWriter: MarkdownWriterMock
+}));
+jest.unstable_mockModule(srcPath('generators/JSONGenerator.ts'), () => ({
+  JSONGenerator: JSONGeneratorMock
+}));
+jest.unstable_mockModule(srcPath('generators/HTMLGenerator.ts'), () => ({
+  HTMLGenerator: HTMLGeneratorMock
+}));
+jest.unstable_mockModule(srcPath('utils/ErrorHandler.ts'), () => ({
+  ErrorHandler: ErrorHandlerMock
+}));
+jest.unstable_mockModule(srcPath('utils/SafetyValidator.ts'), () => ({
+  SafetyValidator: {
+    validateEnvironment: mockValidateEnvironment,
+    validateConfig: mockValidateConfig,
+    validateOutputPath: mockValidateOutputPath,
+    validateReadPath: mockValidateReadPath,
+    ensureSafeOutputDirectory: mockEnsureSafeOutputDirectory
+  }
+}));
+jest.unstable_mockModule('fs', () => ({
+  ...(jest.requireActual('fs') as object),
+  promises: {
+    readFile: mockReadFile
+  }
+}));
+
+let AnalysisEngine: typeof import('../../src/core/AnalysisEngine').AnalysisEngine;
+
+beforeAll(async () => {
+  ({ AnalysisEngine } = await import('../../src/core/AnalysisEngine'));
+});
 
 describe('AnalysisEngine', () => {
-  let analysisEngine: AnalysisEngine;
+  let analysisEngine: InstanceType<typeof AnalysisEngine>;
   let mockConfig: ToolConfig;
+  // Re-spied fresh every test: afterEach below calls jest.restoreAllMocks(),
+  // which un-wraps spies created via jest.spyOn (unlike jest.clearAllMocks(),
+  // which only clears call history) - a module-level spy would only survive
+  // the first test in this file.
+  let mockConsoleLog: ReturnType<typeof jest.spyOn>;
+  let mockConsoleError: ReturnType<typeof jest.spyOn>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    mockValidateOutputPath.mockReturnValue({ valid: true });
+    mockValidateReadPath.mockReturnValue(true);
+    mockValidateEnvironment.mockReturnValue({ valid: true, warnings: [] });
+    mockValidateConfig.mockReturnValue({ valid: true, errors: [] });
+    mockEnsureSafeOutputDirectory.mockReturnValue(undefined);
+    mockReadFile.mockResolvedValue('export const Test = () => null;');
+
+    ErrorHandlerMock.mockImplementation(() => ({
+      logError: jest.fn()
+    }));
+
     mockConfig = {
       rootDir: '/test/root',
       outputPath: '/test/output.md',
@@ -61,35 +143,25 @@ describe('AnalysisEngine', () => {
     });
 
     it('should create error handler instance', () => {
-      const { ErrorHandler } = require('../../src/utils/ErrorHandler');
-      expect(ErrorHandler).toHaveBeenCalled();
+      expect(ErrorHandlerMock).toHaveBeenCalled();
     });
   });
 
   describe('analyze()', () => {
     const mockFiles = [
-      { relativePath: 'test.tsx', fullPath: '/test/root/test.tsx', content: 'export const Test = () => null;' }
+      { path: '/test/root/test.tsx', relativePath: 'test.tsx', name: 'test.tsx', extension: '.tsx', size: 10, category: 'component' }
     ];
 
     beforeEach(() => {
       // Mock FileScanner
-      const { FileScanner } = require('../../src/scanners/FileScanner');
       const mockScanner = {
-        // @ts-ignore - Mock type mismatch
-        scanDirectory: jest.fn().mockResolvedValue(mockFiles),
-        // @ts-ignore - Mock type mismatch
+        scanDirectory: (jest.fn() as any).mockResolvedValue(mockFiles),
         getErrors: jest.fn().mockReturnValue([])
       };
-      (FileScanner as any).mockImplementation(() => mockScanner);
+      FileScannerMock.mockImplementation(() => mockScanner);
 
       // Mock other dependencies
-      const { DependencyAnalyzer } = require('../../src/analyzers/DependencyAnalyzer');
-      const { MetadataExtractor } = require('../../src/analyzers/MetadataExtractor');
-      const { CatalogBuilder } = require('../../src/analyzers/CatalogBuilder');
-      const { MarkdownWriter } = require('../../src/generators/MarkdownGenerator');
-      const { SafetyValidator } = require('../../src/utils/SafetyValidator');
-
-      (DependencyAnalyzer as any).mockImplementation(() => ({
+      DependencyAnalyzerMock.mockImplementation(() => ({
         analyzeDependencies: jest.fn().mockReturnValue({
           internal: [],
           external: [],
@@ -97,42 +169,37 @@ describe('AnalysisEngine', () => {
           apis: []
         }),
         buildDependencyGraph: jest.fn().mockReturnValue({
-          nodes: [],
+          nodes: new Map(),
           edges: []
         })
       }));
 
-      (MetadataExtractor as any).mockImplementation(() => ({
-        // @ts-ignore - Mock type mismatch
-        extractMetadata: jest.fn().mockResolvedValue({
-          complexity: 1,
-          linesOfCode: 10,
-          features: []
+      MetadataExtractorMock.mockImplementation(() => ({
+        extractMetadata: jest.fn().mockReturnValue({
+          name: 'Test',
+          filePath: 'test.tsx',
+          category: 'component',
+          description: '',
+          exports: [],
+          complexity: { linesOfCode: 10, dependencies: 0 },
+          migrationNotes: []
         })
       }));
 
-      (CatalogBuilder as any).mockImplementation(() => ({
-        // @ts-ignore - Mock type mismatch
-        buildCatalog: jest.fn().mockResolvedValue({
-          title: 'Test Catalog',
-          features: []
+      CatalogBuilderMock.mockImplementation(() => ({
+        buildCatalog: jest.fn().mockReturnValue({
+          metadata: { projectName: 'Test', generatedAt: new Date().toISOString(), totalFiles: 1, totalFeatures: 1, version: '1.0.0' },
+          summary: { pages: 0, components: 0, services: 0, hooks: 0, utilities: 0, types: 0, externalDependencies: [], keyTechnologies: [] },
+          features: { pages: [], components: [], services: [], hooks: [], utilities: [], types: [], modules: [] },
+          dependencyGraph: { nodes: new Map(), edges: [] },
+          migrationGuide: { overview: '', recommendations: [], challenges: [], migrationOrder: [] }
         })
       }));
 
-      (MarkdownWriter as any).mockImplementation(() => ({
-        // @ts-ignore - Mock type mismatch
-        write: jest.fn().mockResolvedValue(undefined)
+      MarkdownWriterMock.mockImplementation(() => ({
+        generateMarkdown: jest.fn().mockReturnValue('# Catalog'),
+        writeToFile: jest.fn()
       }));
-
-      SafetyValidator.validateEnvironment = jest.fn().mockReturnValue({
-        valid: true,
-        warnings: []
-      });
-
-      SafetyValidator.validateConfig = jest.fn().mockReturnValue({
-        valid: true,
-        errors: []
-      });
     });
 
     it('should run analysis successfully', async () => {
@@ -141,7 +208,7 @@ describe('AnalysisEngine', () => {
 
     it('should log analysis start information', async () => {
       await analysisEngine.analyze();
-      
+
       expect(mockConsoleLog).toHaveBeenCalledWith('🔍 Starting React Feature Discovery Analysis...\n');
       expect(mockConsoleLog).toHaveBeenCalledWith('🛡️  Safety Mode: ENABLED (Read-only analysis, no code modifications)\n');
       expect(mockConsoleLog).toHaveBeenCalledWith(`📁 Root Directory: ${mockConfig.rootDir}`);
@@ -149,32 +216,26 @@ describe('AnalysisEngine', () => {
     });
 
     it('should handle scanner errors gracefully', async () => {
-      const { FileScanner } = require('../../src/scanners/FileScanner');
       const mockScanner = {
-        // @ts-ignore - Mock type mismatch
-        scanDirectory: jest.fn().mockResolvedValue(mockFiles),
-        // @ts-ignore - Mock type mismatch
+        scanDirectory: (jest.fn() as any).mockResolvedValue(mockFiles),
         getErrors: jest.fn().mockReturnValue(['File not found: test.tsx'])
       };
-      (FileScanner as any).mockImplementation(() => mockScanner);
+      FileScannerMock.mockImplementation(() => mockScanner);
 
-      const { ErrorHandler } = require('../../src/utils/ErrorHandler');
       const mockErrorHandler = {
         logError: jest.fn()
       };
-      (ErrorHandler as any).mockImplementation(() => mockErrorHandler);
+      ErrorHandlerMock.mockImplementation(() => mockErrorHandler);
+      analysisEngine = new AnalysisEngine(mockConfig);
 
       await analysisEngine.analyze();
-      
+
       expect(mockErrorHandler.logError).toHaveBeenCalledWith('FILE_NOT_FOUND', 'File not found: test.tsx', 'warning');
     });
 
     it('should handle analysis errors', async () => {
-      const { FileScanner } = require('../../src/scanners/FileScanner');
-      (FileScanner as any).mockImplementation(() => ({
-        // @ts-ignore - Mock type mismatch
-        scanDirectory: jest.fn().mockRejectedValue(new Error('Scanner error')),
-        // @ts-ignore - Mock type mismatch
+      FileScannerMock.mockImplementation(() => ({
+        scanDirectory: (jest.fn() as any).mockRejectedValue(new Error('Scanner error')),
         getErrors: jest.fn().mockReturnValue([])
       }));
 

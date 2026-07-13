@@ -27,8 +27,12 @@ export class SafetyValidator {
    */
   static validateRootDirectory(rootDir: string): { valid: boolean; error?: string } {
     try {
+      if (!rootDir || rootDir.trim() === '') {
+        return { valid: false, error: 'Root directory path cannot be empty' };
+      }
+
       const resolvedPath = path.resolve(rootDir);
-      
+
       // Check if directory exists
       if (!fs.existsSync(resolvedPath)) {
         return { valid: false, error: `Directory does not exist: ${rootDir}` };
@@ -40,9 +44,20 @@ export class SafetyValidator {
         return { valid: false, error: `Path is not a directory: ${rootDir}` };
       }
 
-      // Prevent analyzing system directories
-      const systemDirs = ['/', '/bin', '/sbin', '/usr', '/etc', '/var', '/sys', '/proc', 'C:\\Windows', 'C:\\Program Files'];
-      if (systemDirs.some(sysDir => resolvedPath === sysDir || resolvedPath.startsWith(sysDir + path.sep))) {
+      // Prevent analyzing system directories. Compared case-insensitively
+      // against both the resolved path and the raw input (normalized to
+      // forward slashes) so that Windows-style system paths (e.g.
+      // 'C:\Windows') are still recognized even when this tool runs on a
+      // non-Windows host, where path.resolve() would otherwise treat them as
+      // an ordinary relative path segment under the current directory.
+      const systemDirs = ['/', '/bin', '/sbin', '/usr', '/etc', '/var', '/sys', '/proc', 'c:/windows', 'c:/program files'];
+      const normalizedResolved = resolvedPath.replace(/\\/g, '/').toLowerCase();
+      const normalizedInput = rootDir.replace(/\\/g, '/').toLowerCase();
+      const isSystemDir = systemDirs.some(sysDir =>
+        normalizedResolved === sysDir || normalizedResolved.startsWith(sysDir + '/') ||
+        normalizedInput === sysDir || normalizedInput.startsWith(sysDir + '/')
+      );
+      if (isSystemDir) {
         return { valid: false, error: 'Cannot analyze system directories for safety reasons' };
       }
 
@@ -161,7 +176,7 @@ export class SafetyValidator {
   /**
    * Validates configuration to ensure it's safe
    */
-  static validateConfig(config: { rootDir?: string; outputPath?: string; excludeDirs?: string[] }): { valid: boolean; errors: string[] } {
+  static validateConfig(config: { rootDir?: string; outputPath?: string; excludeDirs?: string[]; outputFormats?: string[] }): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
     // Validate root directory
@@ -190,6 +205,19 @@ export class SafetyValidator {
       }
     }
 
+    // Validate output formats against the supported/safe set. This is
+    // deliberately defensive here (ConfigValidator also validates this at
+    // the schema level) since SafetyValidator is this project's single
+    // place for safety-related checks (see CLAUDE.md).
+    const safeOutputFormats = ['markdown', 'json', 'html'];
+    if (config.outputFormats) {
+      for (const format of config.outputFormats) {
+        if (!safeOutputFormats.includes(format)) {
+          errors.push(`Invalid output format: ${format}`);
+        }
+      }
+    }
+
     return {
       valid: errors.length === 0,
       errors
@@ -206,7 +234,7 @@ export class SafetyValidator {
     const nodeVersion = process.version;
     const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
     if (majorVersion < 18) {
-      warnings.push(`Node.js ${nodeVersion} detected. Version 18+ is recommended.`);
+      warnings.push(`Node.js version ${nodeVersion} detected. Version 18+ is recommended.`);
     }
 
     // Check if running with elevated privileges (not recommended)

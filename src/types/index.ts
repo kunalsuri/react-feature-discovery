@@ -205,7 +205,8 @@ export type ErrorType =
   | 'UNICODE_ERROR'
   | 'ERROR_1'
   | 'ERROR_2'
-  | 'ERROR_3';
+  | 'ERROR_3'
+  | 'ERROR_4';
 
 // Re-export config types
 export * from './config.js';

@@ -2,8 +2,8 @@
 
 > Comprehensive feature documentation for migration and development reference
 
-**Generated:** 7/13/2026, 8:01:43 PM
-**Version:** 0.1.0
+Generated: 7/13/2026, 8:49:27 PM
+Version: 0.1.0
 
 ## Table of Contents
 
@@ -26,10 +26,15 @@
 | Project Name | react-feature-discovery |
 | Total Files | 47 |
 | Total Features | 47 |
-| Generated At | 7/13/2026, 8:01:43 PM |
+| Generated At | 7/13/2026, 8:49:27 PM |
 | Version | 0.1.0 |
 
 ## Summary
+
+Total Features: 47
+Components: 0
+Services: 0
+Hooks: 0
 
 ### Feature Breakdown
 
@@ -45,6 +50,8 @@
 ### Key Technologies
 
 - React
+
+**Frontend:** React
 
 ### External Dependencies (11)
 
@@ -96,12 +103,11 @@ Total: 6
 **Exports:**
 - `ErrorHandler` (named class)
 
-**Dependencies:**
-
-*Internal (1):*
-- `../types/index.js` (type)
+**Internal Dependencies:**
+- `../types/index.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 70
 - Dependencies: 1
 
@@ -118,14 +124,13 @@ Total: 6
 **Exports:**
 - `SafetyValidator` (named class)
 
-**Dependencies:**
-
-*External (2):*
-- `path`
-- `fs`
+**External Dependencies:**
+- path (* as path)
+- fs (* as fs)
 
 **Complexity:**
-- Lines of Code: 175
+Complexity: 2
+- Lines of Code: 192
 - Dependencies: 2
 
 **Migration Notes:**
@@ -146,10 +151,9 @@ Total: 6
 - `CodeLocation` (named type)
 - `LocationDetector` (named class)
 
-**Dependencies:**
-
 **Complexity:**
-- Lines of Code: 36
+Complexity: 0
+- Lines of Code: 68
 - Dependencies: 0
 
 ---
@@ -162,16 +166,15 @@ Total: 6
 
 **Description:** ErrorHandler Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/utils/ErrorHandler`
+- `../../src/types/index`
 
-*Internal (2):*
-- `../../src/utils/ErrorHandler` (utility)
-- `../../src/types/index` (type)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
 
 **Complexity:**
+Complexity: 3
 - Lines of Code: 230
 - Dependencies: 3
 
@@ -185,20 +188,14 @@ Total: 6
 
 **Description:** SafetyValidator Tests
 
-**Dependencies:**
-
-*Internal (2):*
-- `../../src/utils/SafetyValidator` (utility)
-- `../../src/types/index` (type)
-
-*External (3):*
-- `@jest/globals`
-- `fs`
-- `path`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, beforeAll, afterEach)
+- path (* as path)
 
 **Complexity:**
-- Lines of Code: 255
-- Dependencies: 5
+Complexity: 2
+- Lines of Code: 293
+- Dependencies: 2
 
 **Migration Notes:**
 - Performs file system operations - ensure proper permissions
@@ -214,15 +211,14 @@ Total: 6
 
 **Description:** LocationDetector Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/utils/locationDetector`
 
-*Internal (1):*
-- `../../src/utils/locationDetector` (utility)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 293
 - Dependencies: 2
 
@@ -253,9 +249,8 @@ Total: 3
 - `ToolConfig` (named interface)
 - `PartialToolConfig` (named type)
 
-**Dependencies:**
-
 **Complexity:**
+Complexity: 0
 - Lines of Code: 52
 - Dependencies: 0
 
@@ -273,12 +268,11 @@ Total: 3
 - `FeatureChange` (named interface)
 - `DiffResult` (named interface)
 
-**Dependencies:**
-
-*Internal (1):*
-- `./index.js` (type)
+**Internal Dependencies:**
+- `./index.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 29
 - Dependencies: 1
 
@@ -319,10 +313,9 @@ Total: 3
 - `AnalysisError` (named interface)
 - `ErrorType` (named type)
 
-**Dependencies:**
-
 **Complexity:**
-- Lines of Code: 180
+Complexity: 0
+- Lines of Code: 181
 - Dependencies: 0
 
 ---
@@ -344,9 +337,8 @@ Total: 38
 **Exports:**
 - `default` (default const)
 
-**Dependencies:**
-
 **Complexity:**
+Complexity: 0
 - Lines of Code: 36
 - Dependencies: 0
 
@@ -363,16 +355,15 @@ Total: 38
 **Exports:**
 - `CatalogBuilder` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (2):*
-- `fs`
-- `path`
+**External Dependencies:**
+- fs (* as fs)
+- path (* as path)
 
 **Complexity:**
+Complexity: 3
 - Lines of Code: 341
 - Dependencies: 3
 
@@ -394,16 +385,15 @@ Total: 38
 **Exports:**
 - `DependencyAnalyzer` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (2):*
-- `fs`
-- `path`
+**External Dependencies:**
+- fs (* as fs)
+- path (* as path)
 
 **Complexity:**
+Complexity: 3
 - Lines of Code: 202
 - Dependencies: 3
 
@@ -420,15 +410,14 @@ Total: 38
 **Exports:**
 - `MetadataExtractor` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (1):*
-- `path`
+**External Dependencies:**
+- path (* as path)
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 227
 - Dependencies: 2
 
@@ -457,11 +446,13 @@ Total: 38
 - `HOCInfo` (named interface)
 - `ReactPatternDetector` (named class)
 
-**Dependencies:**
-
 **Complexity:**
-- Lines of Code: 161
+Complexity: 0
+- Lines of Code: 169
 - Dependencies: 0
+
+**Migration Notes:**
+- Uses WebSocket connections - verify server configuration
 
 ---
 
@@ -477,24 +468,20 @@ Total: 38
 - `parseCLIArgs` (named function)
 - `showHelp` (named function)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `./config/index.js`
+- `./core/AnalysisEngine.js`
+- `./types/index.js`
+- `./utils/SafetyValidator.js`
 
-*Internal (4):*
-- `./config/index.js` (component)
-- `./core/AnalysisEngine.js` (component)
-- `./types/index.js` (type)
-- `./utils/SafetyValidator.js` (utility)
-
-*External (1):*
-- `module`
+**External Dependencies:**
+- module (createRequire)
+- url (pathToFileURL)
 
 **Complexity:**
-- Lines of Code: 122
-- Dependencies: 5
-
-**Migration Notes:**
-- Uses NODE_ENV for environment detection
-- Uses environment variables
+Complexity: 6
+- Lines of Code: 124
+- Dependencies: 6
 
 ---
 
@@ -509,17 +496,16 @@ Total: 38
 **Exports:**
 - `ConfigLoader` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/config.js`
+- `./defaults.js`
 
-*Internal (2):*
-- `../types/config.js` (type)
-- `./defaults.js` (component)
-
-*External (2):*
-- `fs`
-- `path`
+**External Dependencies:**
+- fs (* as fs)
+- path (* as path)
 
 **Complexity:**
+Complexity: 4
 - Lines of Code: 77
 - Dependencies: 4
 
@@ -539,12 +525,11 @@ Total: 38
 **Exports:**
 - `ConfigMerger` (named class)
 
-**Dependencies:**
-
-*Internal (1):*
-- `../types/config.js` (type)
+**Internal Dependencies:**
+- `../types/config.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 68
 - Dependencies: 1
 
@@ -561,12 +546,11 @@ Total: 38
 **Exports:**
 - `ConfigValidator` (named class)
 
-**Dependencies:**
-
-*Internal (1):*
-- `../types/config.js` (type)
+**Internal Dependencies:**
+- `../types/config.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 154
 - Dependencies: 1
 
@@ -584,12 +568,11 @@ Total: 38
 - `defaultCategoryRules` (named const)
 - `applyCategoryRules` (named function)
 
-**Dependencies:**
-
-*Internal (1):*
-- `../types/config.js` (type)
+**Internal Dependencies:**
+- `../types/config.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 97
 - Dependencies: 1
 
@@ -607,12 +590,11 @@ Total: 38
 - `defaultEnvironmentPatterns` (named const)
 - `defaultConfig` (named const)
 
-**Dependencies:**
-
-*Internal (1):*
-- `../types/config.js` (type)
+**Internal Dependencies:**
+- `../types/config.js`
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 59
 - Dependencies: 1
 
@@ -633,9 +615,8 @@ Total: 38
 - `defaultConfig` (named const)
 - `defaultEnvironmentPatterns` (named const)
 
-**Dependencies:**
-
 **Complexity:**
+Complexity: 0
 - Lines of Code: 6
 - Dependencies: 0
 
@@ -655,9 +636,8 @@ Total: 38
 - `detectTechnologies` (named function)
 - `getTechnologiesByCategory` (named function)
 
-**Dependencies:**
-
 **Complexity:**
+Complexity: 0
 - Lines of Code: 117
 - Dependencies: 0
 
@@ -677,24 +657,23 @@ Total: 38
 **Exports:**
 - `AnalysisEngine` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
+- `../scanners/FileScanner.js`
+- `../analyzers/DependencyAnalyzer.js`
+- `../analyzers/MetadataExtractor.js`
+- `../analyzers/CatalogBuilder.js`
+- `../generators/MarkdownGenerator.js`
+- `../generators/JSONGenerator.js`
+- `../generators/HTMLGenerator.js`
+- `../utils/ErrorHandler.js`
+- `../utils/SafetyValidator.js`
 
-*Internal (10):*
-- `../types/index.js` (type)
-- `../scanners/FileScanner.js` (component)
-- `../analyzers/DependencyAnalyzer.js` (component)
-- `../analyzers/MetadataExtractor.js` (component)
-- `../analyzers/CatalogBuilder.js` (component)
-- `../generators/MarkdownGenerator.js` (component)
-- `../generators/JSONGenerator.js` (component)
-- `../generators/HTMLGenerator.js` (component)
-- `../utils/ErrorHandler.js` (utility)
-- `../utils/SafetyValidator.js` (utility)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
+Complexity: 11
 - Lines of Code: 178
 - Dependencies: 11
 
@@ -714,13 +693,12 @@ Total: 38
 **Exports:**
 - `FeatureDiff` (named class)
 
-**Dependencies:**
-
-*Internal (2):*
-- `../types/index.js` (type)
-- `../types/diff.js` (type)
+**Internal Dependencies:**
+- `../types/index.js`
+- `../types/diff.js`
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 89
 - Dependencies: 2
 
@@ -740,16 +718,15 @@ Total: 38
 **Exports:**
 - `DiffHTMLGenerator` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/diff.js`
+- `../types/index.js`
 
-*Internal (2):*
-- `../types/diff.js` (type)
-- `../types/index.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
+Complexity: 3
 - Lines of Code: 559
 - Dependencies: 3
 
@@ -770,15 +747,14 @@ Total: 38
 **Exports:**
 - `DiffJSONGenerator` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/diff.js`
 
-*Internal (1):*
-- `../types/diff.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 109
 - Dependencies: 2
 
@@ -798,16 +774,15 @@ Total: 38
 **Exports:**
 - `DiffMarkdownGenerator` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/diff.js`
+- `../types/index.js`
 
-*Internal (2):*
-- `../types/diff.js` (type)
-- `../types/index.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
+Complexity: 3
 - Lines of Code: 193
 - Dependencies: 3
 
@@ -827,16 +802,15 @@ Total: 38
 **Exports:**
 - `HTMLGenerator` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
-- Lines of Code: 86
+Complexity: 2
+- Lines of Code: 205
 - Dependencies: 2
 
 **Migration Notes:**
@@ -855,16 +829,15 @@ Total: 38
 **Exports:**
 - `JSONGenerator` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
-- Lines of Code: 22
+Complexity: 2
+- Lines of Code: 31
 - Dependencies: 2
 
 **Migration Notes:**
@@ -883,16 +856,15 @@ Total: 38
 **Exports:**
 - `MarkdownWriter` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
 
-*Internal (1):*
-- `../types/index.js` (type)
-
-*External (1):*
-- `fs`
+**External Dependencies:**
+- fs (* as fs)
 
 **Complexity:**
-- Lines of Code: 254
+Complexity: 2
+- Lines of Code: 323
 - Dependencies: 2
 
 **Migration Notes:**
@@ -911,9 +883,8 @@ Total: 38
 **Exports:**
 - `version` (named const)
 
-**Dependencies:**
-
 **Complexity:**
+Complexity: 0
 - Lines of Code: 5
 - Dependencies: 0
 
@@ -930,17 +901,16 @@ Total: 38
 **Exports:**
 - `FileScanner` (named class)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../types/index.js`
+- `../config/categoryRules.js`
 
-*Internal (2):*
-- `../types/index.js` (type)
-- `../config/categoryRules.js` (component)
-
-*External (2):*
-- `fs`
-- `path`
+**External Dependencies:**
+- fs (* as fs)
+- path (* as path)
 
 **Complexity:**
+Complexity: 4
 - Lines of Code: 85
 - Dependencies: 4
 
@@ -957,26 +927,25 @@ Total: 38
 
 **Description:** Web GUI server for React Feature Discovery tool
 
-**Dependencies:**
+**Internal Dependencies:**
+- `./config/index.js`
+- `./core/AnalysisEngine.js`
+- `./core/FeatureDiff.js`
+- `./utils/SafetyValidator.js`
+- `./generators/DiffMarkdownGenerator.js`
+- `./generators/DiffJSONGenerator.js`
+- `./generators/DiffHTMLGenerator.js`
 
-*Internal (7):*
-- `./config/index.js` (component)
-- `./core/AnalysisEngine.js` (component)
-- `./core/FeatureDiff.js` (component)
-- `./utils/SafetyValidator.js` (utility)
-- `./generators/DiffMarkdownGenerator.js` (component)
-- `./generators/DiffJSONGenerator.js` (component)
-- `./generators/DiffHTMLGenerator.js` (component)
-
-*External (6):*
-- `http`
-- `fs`
-- `path`
-- `url`
-- `child_process`
-- `crypto`
+**External Dependencies:**
+- http (http)
+- fs (fs)
+- path (path)
+- url (fileURLToPath)
+- child_process (execFile)
+- crypto (randomUUID)
 
 **Complexity:**
+Complexity: 13
 - Lines of Code: 457
 - Dependencies: 13
 
@@ -997,28 +966,27 @@ Total: 38
 
 **Description:** DependencyAnalyzer Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/analyzers/DependencyAnalyzer`
+- `../../src/types/index`
+- `../utils/helpers`
+- `./Button.css`
+- `../utils/helpers`
+- `./styles.css`
+- `../utils/helper`
+- `./nonexistent`
 
-*Internal (8):*
-- `../../src/analyzers/DependencyAnalyzer` (component)
-- `../../src/types/index` (type)
-- `../utils/helpers` (utility)
-- `./Button.css` (component)
-- `../utils/helpers` (utility)
-- `./styles.css` (component)
-- `../utils/helper` (utility)
-- `./nonexistent` (component)
-
-*External (7):*
-- `@jest/globals`
-- `react`
-- `react`
-- `react`
-- `react`
-- `react`
-- `lodash`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach)
+- react (React)
+- react (useState, useEffect)
+- react (* as React)
+- react (React)
+- react (useState)
+- lodash (lodash)
 
 **Complexity:**
+Complexity: 15
 - Lines of Code: 208
 - Dependencies: 15
 
@@ -1037,17 +1005,16 @@ Total: 38
 - `withStyle` (default const)
 - `Button` (named const)
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/analyzers/ReactPatternDetector`
 
-*Internal (1):*
-- `../../src/analyzers/ReactPatternDetector` (component)
-
-*External (3):*
-- `@jest/globals`
-- `react`
-- `react`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach)
+- react (useState, useEffect, useContext)
+- react (useCallback, useMemo)
 
 **Complexity:**
+Complexity: 4
 - Lines of Code: 319
 - Dependencies: 4
 
@@ -1061,12 +1028,11 @@ Total: 38
 
 **Description:** Basic Test to Verify Jest Setup
 
-**Dependencies:**
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest)
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 18
 - Dependencies: 1
 
@@ -1080,15 +1046,14 @@ Total: 38
 
 **Description:** CLI Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../src/cli`
 
-*Internal (1):*
-- `../src/cli` (component)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach)
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 17
 - Dependencies: 2
 
@@ -1102,12 +1067,11 @@ Total: 38
 
 **Description:** CLI Test using compiled JavaScript files
 
-**Dependencies:**
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 61
 - Dependencies: 1
 
@@ -1121,16 +1085,15 @@ Total: 38
 
 **Description:** CLI Integration Tests for React Feature Discovery Tool
 
-**Dependencies:**
-
-*External (5):*
-- `@jest/globals`
-- `child_process`
-- `util`
-- `url`
-- `path`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
+- child_process (spawn)
+- util (promisify)
+- url (fileURLToPath)
+- path (dirname, join)
 
 **Complexity:**
+Complexity: 5
 - Lines of Code: 125
 - Dependencies: 5
 
@@ -1144,15 +1107,14 @@ Total: 38
 
 **Description:** CLI Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../src/cli`
 
-*Internal (1):*
-- `../src/cli` (component)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
 
 **Complexity:**
+Complexity: 2
 - Lines of Code: 115
 - Dependencies: 2
 
@@ -1169,19 +1131,17 @@ Total: 38
 **Exports:**
 - `Test` (named const)
 
-**Dependencies:**
-
-*Internal (2):*
-- `../../src/core/AnalysisEngine` (component)
-- `../../src/types` (type)
-
-*External (2):*
-- `@jest/globals`
-- `fs`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach, beforeAll)
+- path (* as path)
 
 **Complexity:**
-- Lines of Code: 166
-- Dependencies: 4
+Complexity: 2
+- Lines of Code: 215
+- Dependencies: 2
+
+**Migration Notes:**
+- Performs file system operations - ensure proper permissions
 
 ---
 
@@ -1193,21 +1153,20 @@ Total: 38
 
 **Description:** DiffGenerators.test module
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/generators/DiffMarkdownGenerator`
+- `../../src/generators/DiffJSONGenerator`
+- `../../src/generators/DiffHTMLGenerator`
+- `../../src/types/diff`
 
-*Internal (4):*
-- `../../src/generators/DiffMarkdownGenerator` (component)
-- `../../src/generators/DiffJSONGenerator` (component)
-- `../../src/generators/DiffHTMLGenerator` (component)
-- `../../src/types/diff` (type)
-
-*External (4):*
-- `@jest/globals`
-- `fs`
-- `path`
-- `url`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, beforeEach, beforeAll, afterAll)
+- fs (* as fs)
+- path (* as path)
+- url (fileURLToPath)
 
 **Complexity:**
+Complexity: 8
 - Lines of Code: 250
 - Dependencies: 8
 
@@ -1224,17 +1183,16 @@ Total: 38
 
 **Description:** HTMLGenerator Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/generators/HTMLGenerator`
+- `../../src/types/index`
 
-*Internal (2):*
-- `../../src/generators/HTMLGenerator` (component)
-- `../../src/types/index` (type)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach)
 
 **Complexity:**
-- Lines of Code: 352
+Complexity: 3
+- Lines of Code: 351
 - Dependencies: 3
 
 ---
@@ -1247,19 +1205,13 @@ Total: 38
 
 **Description:** JSONGenerator Tests
 
-**Dependencies:**
-
-*Internal (2):*
-- `../../src/generators/JSONGenerator` (component)
-- `../../src/types/index` (type)
-
-*External (2):*
-- `@jest/globals`
-- `fs`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, beforeAll)
 
 **Complexity:**
-- Lines of Code: 278
-- Dependencies: 4
+Complexity: 1
+- Lines of Code: 285
+- Dependencies: 1
 
 **Migration Notes:**
 - Performs file system operations - ensure proper permissions
@@ -1274,17 +1226,16 @@ Total: 38
 
 **Description:** MarkdownGenerator Tests
 
-**Dependencies:**
+**Internal Dependencies:**
+- `../../src/generators/MarkdownGenerator`
+- `../../src/types/index`
 
-*Internal (2):*
-- `../../src/generators/MarkdownGenerator` (component)
-- `../../src/types/index` (type)
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach)
 
 **Complexity:**
-- Lines of Code: 295
+Complexity: 3
+- Lines of Code: 294
 - Dependencies: 3
 
 ---
@@ -1297,17 +1248,13 @@ Total: 38
 
 **Description:** Server Tests for React Feature Discovery Tool
 
-**Dependencies:**
-
-*External (4):*
-- `@jest/globals`
-- `http`
-- `fs`
-- `path`
+**External Dependencies:**
+- @jest/globals (describe, it, expect, jest, beforeEach, afterEach)
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 367
-- Dependencies: 4
+- Dependencies: 1
 
 **Migration Notes:**
 - Uses environment variables
@@ -1331,12 +1278,11 @@ Total: 38
 - `mockReactComponent` (named const)
 - `mockReactHook` (named const)
 
-**Dependencies:**
-
-*External (1):*
-- `@jest/globals`
+**External Dependencies:**
+- @jest/globals (jest, afterEach)
 
 **Complexity:**
+Complexity: 1
 - Lines of Code: 54
 - Dependencies: 1
 
@@ -1354,6 +1300,9 @@ Total: 38
 
 This project contains 47 features across 0 pages, 0 components, 0 services, 0 hooks, 6 utilities, 3 type definitions, and 38 modules. The application follows a modern React architecture.
 
+Complexity: low
+Estimated Effort: 1-2 days
+
 ### Recommendations
 
 1. Start by migrating type definitions and shared utilities first
@@ -1367,7 +1316,7 @@ This project contains 47 features across 0 pages, 0 components, 0 services, 0 ho
 
 #### Environment Detection
 
-**Challenge:** 4 files contain environment-specific code
+**Challenge:** 3 files contain environment-specific code
 
 **Recommendation:** Create environment abstraction layer and configuration management system
 
@@ -1399,9 +1348,9 @@ Migrate in the following order (least dependent first):
 4. `src/utils/ErrorHandler.ts`
 5. `src/utils/SafetyValidator.ts`
 6. `src/utils/locationDetector.ts`
-7. `tests/utils/locationDetector.test.ts`
-8. `tests/utils/ErrorHandler.test.ts`
-9. `tests/utils/SafetyValidator.test.ts`
+7. `tests/utils/SafetyValidator.test.ts`
+8. `tests/utils/locationDetector.test.ts`
+9. `tests/utils/ErrorHandler.test.ts`
 10. `src/analyzers/CatalogBuilder.ts`
 11. `src/analyzers/DependencyAnalyzer.ts`
 12. `src/analyzers/MetadataExtractor.ts`
@@ -1418,18 +1367,18 @@ Migrate in the following order (least dependent first):
 
 ## Dependency Graph
 
-**Total Nodes:** 47
-**Total Edges:** 22
+Total Nodes: 47
+Total Edges: 16
 
 ### Most Depended Upon Files
 
-1. `src/types/index.ts` - 7 dependents
+1. `src/types/index.ts` - 4 dependents
 2. `src/cli.ts` - 2 dependents
 3. `src/analyzers/DependencyAnalyzer.ts` - 1 dependents
 4. `src/analyzers/ReactPatternDetector.ts` - 1 dependents
-5. `src/core/AnalysisEngine.ts` - 1 dependents
-6. `src/generators/DiffHTMLGenerator.ts` - 1 dependents
-7. `src/generators/DiffJSONGenerator.ts` - 1 dependents
-8. `src/generators/DiffMarkdownGenerator.ts` - 1 dependents
-9. `src/generators/HTMLGenerator.ts` - 1 dependents
-10. `src/generators/JSONGenerator.ts` - 1 dependents
+5. `src/generators/DiffHTMLGenerator.ts` - 1 dependents
+6. `src/generators/DiffJSONGenerator.ts` - 1 dependents
+7. `src/generators/DiffMarkdownGenerator.ts` - 1 dependents
+8. `src/generators/HTMLGenerator.ts` - 1 dependents
+9. `src/generators/MarkdownGenerator.ts` - 1 dependents
+10. `src/types/diff.ts` - 1 dependents

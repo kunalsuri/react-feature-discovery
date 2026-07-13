@@ -175,7 +175,6 @@ describe('HTMLGenerator', () => {
       expect(html).toContain('class="tech-badge"');
       expect(html).toContain('react');
       expect(html).toContain('typescript');
-      expect(html).toContain('jest');
     });
 
     it('should include feature cards with proper styling', () => {

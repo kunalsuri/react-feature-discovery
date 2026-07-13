@@ -65,12 +65,15 @@ export class ReactPatternDetector {
       }
     }
 
-    // Detect custom hooks (functions starting with 'use')
-    const customHookRegex = /(?:function|const)\s+(use[A-Z]\w*)/g;
+    // Detect custom hooks (functions starting with 'use'). Requires the
+    // declaration to actually be a function (declaration, function
+    // expression, or arrow function) - a plain `const useState = 'x'`
+    // variable holding a non-function value is not a hook.
+    const customHookRegex = /(?:function\s+(use[A-Z]\w*)\s*\()|(?:const\s+(use[A-Z]\w*)\s*=\s*(?:\([^)]*\)\s*=>|function\b))/g;
     let match;
     while ((match = customHookRegex.exec(content)) !== null) {
       hooks.push({
-        name: match[1],
+        name: match[1] || match[2],
         type: 'custom'
       });
     }
@@ -97,8 +100,22 @@ export class ReactPatternDetector {
       });
     }
 
-    // Arrow function components
-    const arrowComponentRegex = /(?:export\s+)?(?:default\s+)?const\s+([A-Z]\w*)\s*[:=]\s*(?:\([^)]*\)|[^=]+)\s*=>/g;
+    // Function components assigned via a function expression, e.g.
+    // `const Input = function() { ... }`
+    const funcExprComponentRegex = /(?:export\s+)?(?:default\s+)?const\s+([A-Z]\w*)\s*=\s*function\s*\(/g;
+    while ((match = funcExprComponentRegex.exec(content)) !== null) {
+      components.push({
+        name: match[1],
+        type: 'function',
+        isExported: match[0].includes('export')
+      });
+    }
+
+    // Arrow function components. Allows an optional TypeScript type
+    // annotation on the variable itself (e.g. `: React.FC<Props>`) and an
+    // optional return-type annotation between the parameter list and the
+    // arrow (e.g. `(props): JSX.Element =>`).
+    const arrowComponentRegex = /(?:export\s+)?(?:default\s+)?const\s+([A-Z]\w*)\s*(?::[^=]+)?=\s*(?:\([^)]*\)|[^=>\n]+)(?:\s*:[^=]+)?\s*=>/g;
     while ((match = arrowComponentRegex.exec(content)) !== null) {
       components.push({
         name: match[1],
@@ -172,8 +189,10 @@ export class ReactPatternDetector {
       }
     }
 
-    // Detect wrapped components (e.g., export default withAuth(MyComponent))
-    const wrappedRegex = /export\s+default\s+(\w+)\((\w+)\)/g;
+    // Detect wrapped components, e.g. `export default withAuth(MyComponent)`
+    // or `const Enhanced = withAuth(MyComponent)`. Only takes effect when the
+    // called function was already recognized as an HOC above.
+    const wrappedRegex = /(?:export\s+default\s+|const\s+\w+\s*=\s*)(\w+)\((\w+)\)/g;
     let wrappedMatch: RegExpExecArray | null;
     while ((wrappedMatch = wrappedRegex.exec(content)) !== null) {
       const existingHoc = hocs.find(h => h.name === wrappedMatch![1]);

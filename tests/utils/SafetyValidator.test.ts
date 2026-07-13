@@ -2,21 +2,43 @@
  * SafetyValidator Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { SafetyValidator } from '../../src/utils/SafetyValidator';
-import { ToolConfig } from '../../src/types/index';
-import * as fs from 'fs';
+import { describe, it, expect, jest, beforeEach, beforeAll, afterEach } from '@jest/globals';
+import type { ToolConfig } from '../../src/types/index';
+import type * as fs from 'fs';
 import * as path from 'path';
 
-// Only mock fs — do NOT mock path, as SafetyValidator uses path.resolve internally
-jest.mock('fs');
+// Only mock fs — do NOT mock path, as SafetyValidator uses path.resolve internally.
+// jest.mock('fs') doesn't produce real jest.fn()-wrapped methods for Node core
+// builtins under this project's ESM Jest setup (--experimental-vm-modules), so
+// we use jest.unstable_mockModule + a dynamic import of the module under test
+// instead (the documented ESM-compatible pattern).
+const mockExistsSync = jest.fn();
+const mockStatSync = jest.fn();
+const mockMkdirSync = jest.fn();
 
-const mockFs = fs as jest.Mocked<typeof fs>;
+jest.unstable_mockModule('fs', () => ({
+  ...(jest.requireActual('fs') as object),
+  existsSync: mockExistsSync,
+  statSync: mockStatSync,
+  mkdirSync: mockMkdirSync
+}));
+
+const mockFs = {
+  existsSync: mockExistsSync,
+  statSync: mockStatSync,
+  mkdirSync: mockMkdirSync
+};
+
+let SafetyValidator: typeof import('../../src/utils/SafetyValidator').SafetyValidator;
+
+beforeAll(async () => {
+  ({ SafetyValidator } = await import('../../src/utils/SafetyValidator'));
+});
 
 describe('SafetyValidator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup default fs mocks
     mockFs.existsSync.mockReturnValue(true);
     mockFs.statSync.mockReturnValue({
@@ -92,6 +114,14 @@ describe('SafetyValidator', () => {
   });
 
   describe('validateOutputPath', () => {
+    beforeEach(() => {
+      // Output paths represent files that (usually) don't exist yet - unlike
+      // the outer default (which models an existing directory, appropriate
+      // for validateRootDirectory), so existsSync should report "not found"
+      // here to avoid the "is a directory" branch firing for every path.
+      mockFs.existsSync.mockReturnValue(false);
+    });
+
     it('should validate safe output paths', () => {
       const safePaths = [
         '/output/report.md',
@@ -179,6 +209,14 @@ describe('SafetyValidator', () => {
         environmentPatterns: [],
         customMigrationRules: []
       };
+
+      // rootDir should appear to be an existing directory; outputPath should
+      // appear not to exist yet (it's the not-yet-generated report file), so
+      // it isn't mistaken for a pre-existing directory by validateOutputPath.
+      mockFs.existsSync.mockImplementation((p: any) => {
+        return typeof p === 'string' && path.resolve(p) === path.resolve(mockConfig.rootDir);
+      });
+      mockFs.statSync.mockReturnValue({ isDirectory: () => true } as any);
     });
 
     it('should validate safe configuration', () => {
@@ -237,9 +275,27 @@ describe('SafetyValidator', () => {
   });
 
   describe('validateEnvironment', () => {
+    const originalGetuid = process.getuid;
+    const originalVersion = process.version;
+
+    afterEach(() => {
+      if (originalGetuid) {
+        Object.defineProperty(process, 'getuid', { value: originalGetuid, configurable: true });
+      }
+      Object.defineProperty(process, 'version', { value: originalVersion, configurable: true });
+    });
+
     it('should validate safe environment', () => {
+      // Force a non-root uid: this suite may itself be running as root (e.g.
+      // in a sandboxed/container environment), which would otherwise make
+      // this "safe environment" case flake depending on who runs the tests.
+      Object.defineProperty(process, 'getuid', {
+        value: () => 1000,
+        configurable: true
+      });
+
       const result = SafetyValidator.validateEnvironment();
-      
+
       expect(result.valid).toBe(true);
       expect(result.warnings).toHaveLength(0);
     });
@@ -250,22 +306,27 @@ describe('SafetyValidator', () => {
         value: () => 0,
         configurable: true
       });
-      
+
       const result = SafetyValidator.validateEnvironment();
-      
+
       expect(result.warnings.length).toBeGreaterThan(0);
-      expect(result.warnings[0]).toContain('running as root');
+      expect(result.warnings[0]).toContain('Running as root');
     });
 
     it('should validate Node.js version', () => {
-      // Mock process.versions
-      Object.defineProperty(process, 'versions', {
-        value: { node: '16.0.0' },
+      // SafetyValidator reads process.version (a string like 'v16.0.0'), not
+      // process.versions (an object) - mock the property it actually reads.
+      Object.defineProperty(process, 'getuid', {
+        value: () => 1000,
         configurable: true
       });
-      
+      Object.defineProperty(process, 'version', {
+        value: 'v16.0.0',
+        configurable: true
+      });
+
       const result = SafetyValidator.validateEnvironment();
-      
+
       expect(result.warnings.length).toBeGreaterThan(0);
       expect(result.warnings[0]).toContain('Node.js version');
     });

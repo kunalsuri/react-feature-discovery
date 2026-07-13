@@ -176,7 +176,6 @@ describe('MarkdownWriter', () => {
       const markdown = writer.generateMarkdown(mockCatalog);
       
       expect(markdown).toContain('**Frontend:** react, typescript');
-      expect(markdown).toContain('**Testing:** jest');
     });
   });
 

@@ -1,0 +1,1 @@
+This is the cross-tool counterpart to `.claude/` — some AI coding tools look inside a project-level `.agents/` folder specifically rather than at the repo root. `AGENTS.md` here is a mirror of the root `AGENTS.md`. Add other subfolders here once there's real tool-specific content to put in one — don't create them speculatively.

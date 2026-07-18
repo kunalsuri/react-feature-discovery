@@ -43,7 +43,7 @@
   "author": "Kunal Suri",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

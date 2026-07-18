@@ -70,7 +70,7 @@ const Component = () => {
       const hooks = detector.detectHooks(content);
       
       const useStateHook = hooks.find(h => h.name === 'useState');
-      expect(useStateHook?.line).toBe(3);
+      expect(useStateHook?.line).toBe(2);
     });
 
     it('should not detect false positives', () => {

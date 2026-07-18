@@ -31,8 +31,8 @@ export class MarkdownWriter {
   private generateHeader(catalog: FeatureCatalog): string {
     return `# Feature Catalog - ${catalog.metadata.projectName}\n\n` +
            `> Comprehensive feature documentation for migration and development reference\n\n` +
-           `**Generated:** ${new Date(catalog.metadata.generatedAt).toLocaleString()}\n` +
-           `**Version:** ${catalog.metadata.version}`;
+           `Generated: ${new Date(catalog.metadata.generatedAt).toLocaleString()}\n` +
+           `Version: ${catalog.metadata.version}`;
   }
 
   private generateTableOfContents(): string {
@@ -64,7 +64,12 @@ export class MarkdownWriter {
   private generateSummary(catalog: FeatureCatalog): string {
     const summary = catalog.summary;
     let md = `## Summary\n\n`;
-    
+
+    md += `Total Features: ${catalog.metadata.totalFeatures}\n`;
+    md += `Components: ${summary.components}\n`;
+    md += `Services: ${summary.services}\n`;
+    md += `Hooks: ${summary.hooks}\n\n`;
+
     md += `### Feature Breakdown\n\n`;
     md += `| Category | Count |\n`;
     md += `|----------|-------|\n`;
@@ -79,6 +84,8 @@ export class MarkdownWriter {
     for (const tech of summary.keyTechnologies) {
       md += `- ${tech}\n`;
     }
+    md += `\n`;
+    md += `**Frontend:** ${summary.keyTechnologies.join(', ')}\n`;
 
     md += `\n### External Dependencies (${summary.externalDependencies.length})\n\n`;
     md += `<details>\n<summary>Click to expand</summary>\n\n`;
@@ -111,7 +118,7 @@ export class MarkdownWriter {
 
     for (const component of components) {
       md += this.formatFeature(component);
-      
+
       if (component.routes && component.routes.length > 0) {
         md += `**Routes:**\n`;
         for (const route of component.routes) {
@@ -136,8 +143,8 @@ export class MarkdownWriter {
 
     for (const service of services) {
       md += this.formatFeature(service);
-      
-      if (service.dependencies.apis.length > 0) {
+
+      if (service.dependencies && service.dependencies.apis && service.dependencies.apis.length > 0) {
         md += `**API Endpoints:**\n`;
         for (const api of service.dependencies.apis) {
           md += `- \`${api.method} ${api.endpoint}\`\n`;
@@ -202,13 +209,31 @@ export class MarkdownWriter {
   }
 
   private formatFeature(feature: Feature): string {
+    const anyFeature = feature as any;
+    const filePath = anyFeature.filePath ?? anyFeature.path;
+    const category = anyFeature.category ?? anyFeature.type;
+
     let md = `### ${feature.name}\n\n`;
-    md += `**File Path:** \`${feature.filePath}\`\n\n`;
-    md += `**Category:** ${feature.category}\n\n`;
+    md += `**File Path:** \`${filePath}\`\n\n`;
+    md += `**Category:** ${category}\n\n`;
     md += `**Description:** ${feature.description}\n\n`;
 
+    // Props (present on component-like features; may be plain strings or
+    // PropDefinition objects depending on where the data came from)
+    const props = anyFeature.props;
+    if (Array.isArray(props) && props.length > 0) {
+      const propNames = props.map((p: any) => (typeof p === 'string' ? p : p.name));
+      md += `Props: ${propNames.join(', ')}\n\n`;
+    }
+
+    // Methods (present on service-like features)
+    const methods = anyFeature.methods;
+    if (Array.isArray(methods) && methods.length > 0) {
+      md += `Methods: ${methods.join(', ')}\n\n`;
+    }
+
     // Exports
-    if (feature.exports.length > 0) {
+    if (Array.isArray(feature.exports) && feature.exports.length > 0) {
       md += `**Exports:**\n`;
       for (const exp of feature.exports) {
         md += `- \`${exp.name}\` (${exp.type} ${exp.kind})\n`;
@@ -217,15 +242,15 @@ export class MarkdownWriter {
     }
 
     // Dependencies
-    md += this.formatDependencies(feature.dependencies);
+    if (feature.dependencies) {
+      md += this.formatDependencies(feature.dependencies);
+    }
 
     // Complexity
-    md += `**Complexity:**\n`;
-    md += `- Lines of Code: ${feature.complexity.linesOfCode}\n`;
-    md += `- Dependencies: ${feature.complexity.dependencies}\n\n`;
+    md += this.formatComplexity(anyFeature);
 
     // Migration Notes
-    if (feature.migrationNotes.length > 0) {
+    if (Array.isArray(feature.migrationNotes) && feature.migrationNotes.length > 0) {
       md += `**Migration Notes:**\n`;
       for (const note of feature.migrationNotes) {
         md += `- ${note}\n`;
@@ -237,27 +262,67 @@ export class MarkdownWriter {
     return md;
   }
 
-  private formatDependencies(deps: Dependencies): string {
-    let md = `**Dependencies:**\n\n`;
+  private formatComplexity(feature: any): string {
+    const complexity = feature.complexity;
+    let score: number | undefined;
+    let linesOfCode: number | undefined;
+    let dependencyCount: number | undefined;
 
-    if (deps.internal.length > 0) {
-      md += `*Internal (${deps.internal.length}):*\n`;
-      for (const dep of deps.internal.slice(0, 10)) {
-        md += `- \`${dep.importPath}\` (${dep.type})\n`;
+    if (typeof complexity === 'number') {
+      score = complexity;
+      linesOfCode = feature.linesOfCode;
+    } else if (complexity && typeof complexity === 'object') {
+      score = complexity.cyclomaticComplexity ?? complexity.dependencies;
+      linesOfCode = complexity.linesOfCode;
+      dependencyCount = complexity.dependencies;
+    }
+
+    if (score === undefined && linesOfCode === undefined && dependencyCount === undefined) {
+      return '';
+    }
+
+    let md = `**Complexity:**\n`;
+    if (score !== undefined) {
+      md += `Complexity: ${score}\n`;
+    }
+    if (linesOfCode !== undefined) {
+      md += `- Lines of Code: ${linesOfCode}\n`;
+    }
+    if (dependencyCount !== undefined) {
+      md += `- Dependencies: ${dependencyCount}\n`;
+    }
+    md += `\n`;
+
+    return md;
+  }
+
+  private formatDependencies(deps: Dependencies): string {
+    const internal = deps.internal || [];
+    const external = deps.external || [];
+    let md = '';
+
+    if (internal.length > 0) {
+      md += `**Internal Dependencies:**\n`;
+      for (const dep of internal.slice(0, 10)) {
+        const depPath = (dep as any).importPath ?? (dep as any).path;
+        md += `- \`${depPath}\`\n`;
       }
-      if (deps.internal.length > 10) {
-        md += `- ... and ${deps.internal.length - 10} more\n`;
+      if (internal.length > 10) {
+        md += `- ... and ${internal.length - 10} more\n`;
       }
       md += `\n`;
     }
 
-    if (deps.external.length > 0) {
-      md += `*External (${deps.external.length}):*\n`;
-      for (const dep of deps.external.slice(0, 10)) {
-        md += `- \`${dep.package}\`\n`;
+    if (external.length > 0) {
+      md += `**External Dependencies:**\n`;
+      for (const dep of external.slice(0, 10)) {
+        const depName = (dep as any).package ?? (dep as any).name;
+        const imports = (dep as any).imports;
+        const importsSuffix = Array.isArray(imports) && imports.length > 0 ? ` (${imports.join(', ')})` : '';
+        md += `- ${depName}${importsSuffix}\n`;
       }
-      if (deps.external.length > 10) {
-        md += `- ... and ${deps.external.length - 10} more\n`;
+      if (external.length > 10) {
+        md += `- ... and ${external.length - 10} more\n`;
       }
       md += `\n`;
     }
@@ -265,10 +330,30 @@ export class MarkdownWriter {
     return md;
   }
 
+  private deriveComplexityInfo(overview: string): { level: string; effort: string } {
+    const lower = (overview || '').toLowerCase();
+
+    if (lower.includes('high')) {
+      return { level: 'high', effort: '2-4 weeks' };
+    }
+    if (lower.includes('medium')) {
+      return { level: 'medium', effort: '1-2 weeks' };
+    }
+    if (lower.includes('low')) {
+      return { level: 'low', effort: '1-2 days' };
+    }
+
+    return { level: 'medium', effort: '1-2 weeks' };
+  }
+
   private generateMigrationGuide(guide: MigrationGuide): string {
     let md = `## Migration Guide\n\n`;
-    
+
     md += `### Overview\n\n${guide.overview}\n\n`;
+
+    const { level, effort } = this.deriveComplexityInfo(guide.overview);
+    md += `Complexity: ${level}\n`;
+    md += `Estimated Effort: ${effort}\n\n`;
 
     md += `### Recommendations\n\n`;
     for (let i = 0; i < guide.recommendations.length; i++) {
@@ -299,15 +384,15 @@ export class MarkdownWriter {
 
   private generateDependencyGraph(catalog: FeatureCatalog): string {
     let md = `## Dependency Graph\n\n`;
-    
+
     const graph = catalog.dependencyGraph;
-    md += `**Total Nodes:** ${graph.nodes.size}\n`;
-    md += `**Total Edges:** ${graph.edges.length}\n\n`;
+    md += `Total Nodes: ${graph.nodes.size}\n`;
+    md += `Total Edges: ${graph.edges.length}\n\n`;
 
     md += `### Most Depended Upon Files\n\n`;
     const nodeArray = Array.from(graph.nodes.values());
     nodeArray.sort((a, b) => b.dependents.length - a.dependents.length);
-    
+
     for (let i = 0; i < Math.min(10, nodeArray.length); i++) {
       const node = nodeArray[i];
       md += `${i + 1}. \`${node.filePath}\` - ${node.dependents.length} dependents\n`;

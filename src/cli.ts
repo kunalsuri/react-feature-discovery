@@ -9,6 +9,7 @@ import { AnalysisEngine } from './core/AnalysisEngine.js';
 import { PartialToolConfig } from './types/index.js';
 import { SafetyValidator } from './utils/SafetyValidator.js';
 import { createRequire } from 'module';
+import { pathToFileURL } from 'url';
 
 const require = createRequire(import.meta.url);
 const { version: CLI_VERSION } = require('../package.json') as { version: string };
@@ -145,14 +146,24 @@ Documentation:
   `);
 }
 
-// Only exit process if not in test environment
+// Only exit the process when this file is actually being run as the CLI
+// entry point (e.g. `node dist/cli.js ...`), not when it's merely imported
+// as a module (as the unit tests do, in-process, to reach parseCLIArgs/
+// showHelp). NODE_ENV==='test' isn't a reliable signal for this: a spawned
+// child process (as used by the integration tests) inherits the parent's
+// environment, including NODE_ENV=test set by Jest, which previously caused
+// process.exit() to be skipped even for a genuine standalone CLI run -
+// masking non-zero exit codes for real error conditions (invalid --root,
+// missing --config, etc).
+const isMainModule = !!process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
 main().then(exitCode => {
-  if (process.env.NODE_ENV !== 'test') {
+  if (isMainModule) {
     process.exit(exitCode);
   }
 }).catch(error => {
   console.error('Fatal error:', error);
-  if (process.env.NODE_ENV !== 'test') {
+  if (isMainModule) {
     process.exit(1);
   }
 });
